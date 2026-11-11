@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Ventriloquist</title>
+        <item>
+            <title>0.1.0</title>
+            <pubDate>Tue, 10 Nov 2026 23:00:50 -0600</pubDate>
+            <link>https://nearbycoder.github.io/Ventriloquist/</link>
+            <sparkle:version>0.1.0</sparkle:version>
+            <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description sparkle:format="markdown"><![CDATA[The first release.
+
+- A bench for open voice models that run on Apple silicon: text to speech, voice cloning,
+  voice conversion and spoken conversation, with every take's speed and memory beside it.
+- 23 models in the catalog, each downloaded only when you ask for it.
+- Built-in voices with previews, cloning from a sample, and direction where a model takes it.
+- Conversation with Sophon Realtime 32B Flash, ported to Apple silicon, and tool calling
+  with LFM2.5 Audio.
+- Enhance and Scene: a local language model that marks up a line, or writes dialogue from a
+  direction, for the voice model that will speak it.
+- Updates itself from this release on.
+]]></description>
+            <enclosure url="https://github.com/nearbycoder/Ventriloquist/releases/download/v0.1.0/Ventriloquist-0.1.0.zip" length="15754452" type="application/octet-stream" sparkle:edSignature="4VYeraz6YhafDB+uLz2xh5l0PbXIq89H+G4nIh0pmH2Dy/AQcwegEuTWXC8YOvu049NZ608tLmIalUHA/xD5AQ=="/>
+        </item>
+    </channel>
+</rss>
