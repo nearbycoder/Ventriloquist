@@ -1,0 +1,57 @@
+#!/bin/sh
+# Signs dist/Ventriloquist.app with the team's Developer ID when its private key is kept by
+# Apple and not in this Mac's keychain (Xcode's cloud-managed certificates). The app, already
+# signed with an Apple Development identity, is wrapped as an Xcode archive and exported for
+# Developer ID distribution: Xcode signs the export, Sparkle's helpers included, through the
+# account signed in to it. The hardened runtime and entitlements carry over.
+#
+# scripts/release uses this when the keychain has no "Developer ID Application" identity.
+set -eu
+cd "$(dirname "$0")/.."
+
+NAME=Ventriloquist
+APP="dist/$NAME.app"
+[ -d "$APP" ] || { echo "There is no $APP yet: run scripts/bundle first." >&2; exit 1; }
+TEAM=${DEVELOPMENT_TEAM:-$(codesign -dvv "$APP" 2>&1 | sed -n 's/^TeamIdentifier=//p')}
+case "$TEAM" in
+  ""|"not set") echo "$APP isn't signed by a developer team: build it with SIGN_IDENTITY set to an Apple Development identity." >&2; exit 1 ;;
+esac
+
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+value() { /usr/libexec/PlistBuddy -c "Print :$1" "$APP/Contents/Info.plist"; }
+
+ARCHIVE="$WORK/$NAME.xcarchive"
+mkdir -p "$ARCHIVE/Products/Applications"
+ditto "$APP" "$ARCHIVE/Products/Applications/$NAME.app"
+INFO="$ARCHIVE/Info.plist"
+plutil -create xml1 "$INFO"
+plutil -insert ArchiveVersion -integer 2 "$INFO"
+plutil -insert Name -string "$NAME" "$INFO"
+plutil -insert SchemeName -string "$NAME" "$INFO"
+plutil -insert CreationDate -date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$INFO"
+plutil -insert ApplicationProperties -dictionary "$INFO"
+plutil -insert ApplicationProperties.ApplicationPath -string "Applications/$NAME.app" "$INFO"
+plutil -insert ApplicationProperties.Team -string "$TEAM" "$INFO"
+for key in CFBundleIdentifier CFBundleShortVersionString CFBundleVersion; do
+  plutil -insert "ApplicationProperties.$key" -string "$(value $key)" "$INFO"
+done
+
+OPTIONS="$WORK/ExportOptions.plist"
+plutil -create xml1 "$OPTIONS"
+plutil -insert method -string developer-id "$OPTIONS"
+plutil -insert teamID -string "$TEAM" "$OPTIONS"
+plutil -insert signingStyle -string automatic "$OPTIONS"
+plutil -insert destination -string export "$OPTIONS"
+
+xcodebuild -exportArchive -archivePath "$ARCHIVE" -exportOptionsPlist "$OPTIONS" -exportPath "$WORK/signed" \
+  -allowProvisioningUpdates > "$WORK/export.log" 2>&1 || { tail -30 "$WORK/export.log" >&2; exit 1; }
+
+SIGNED="$WORK/signed/$NAME.app"
+codesign --verify --deep --strict "$SIGNED"
+codesign -dvv "$SIGNED" 2>&1 | grep -q "^Authority=Developer ID Application:" || { echo "Xcode didn't sign the export with a Developer ID." >&2; exit 1; }
+
+# Only now is the build in dist replaced, so a failed export leaves it as it was.
+rm -rf "$APP"
+ditto "$SIGNED" "$APP"
+echo "Signed $APP with $(codesign -dvv "$APP" 2>&1 | sed -n 's/^Authority=\(Developer ID Application:.*\)/\1/p')"

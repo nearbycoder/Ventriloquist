@@ -201,7 +201,8 @@ sidecar/
   sophon.py     the Sophon Realtime port: weight conversion, audio encoder, prompt and reply
   tools.py      what a conversation model may call: clock, calculator, dice, coin, battery
   setup.py      builds environments with uv and downloads weights (standard library only)
-scripts/        bundle, dmg, release, sparkle (the app, its installer, a release, the updater);
+scripts/        bundle, dmg, release, cloud-sign, sparkle (the app, its installer, a release,
+                Developer ID signing through Xcode, the updater);
                 setup-models, try-model, refresh-voices (rebuilds the voice lists)
 docs/           the website and the update feed, served by GitHub Pages
 ```
@@ -251,8 +252,10 @@ scripts/release                     # builds, signs, notarizes, publishes and up
 Set the new version in `Cargo.toml`, describe it under a `## <version>` heading in
 `CHANGELOG.md`, commit, and run it. The script:
 
-1. builds the app with the updater in it and signs it with the Developer ID certificate in
-   the keychain, under the hardened runtime;
+1. builds the app with the updater in it and signs it with the team's Developer ID, under
+   the hardened runtime: with the certificate in the keychain if there is one, and
+   otherwise through Xcode, which signs with the certificate Apple keeps for the team
+   (`scripts/cloud-sign`);
 2. has Apple notarize the app, then builds the installer (`scripts/dmg`), signs it and has
    that notarized too;
 3. signs the update with the feed's key and adds the version, with its release notes, to

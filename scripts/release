@@ -7,8 +7,10 @@
 # Before running it: set the new version in Cargo.toml, describe it under a "## <version>"
 # heading in CHANGELOG.md, and commit. It needs, once per Mac:
 #
-#   - a "Developer ID Application" certificate in the keychain (Xcode > Settings > Accounts >
-#     Manage Certificates), or its name in SIGN_IDENTITY;
+#   - the team's Developer ID: either a "Developer ID Application" certificate in the
+#     keychain (or its name in SIGN_IDENTITY), or Xcode signed in to the team, which signs
+#     with the certificate Apple keeps for it (scripts/cloud-sign) and needs only an "Apple
+#     Development" identity here;
 #   - notarization credentials saved under the name "ventriloquist" (or NOTARY_PROFILE):
 #       xcrun notarytool store-credentials ventriloquist --apple-id <id> --team-id <team>
 #   - the key updates are signed with, in the login keychain (scripts/sparkle's
@@ -26,11 +28,13 @@ SITE=https://nearbycoder.github.io/Ventriloquist/
 VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
 TAG="v$VERSION"
 PROFILE=${NOTARY_PROFILE:-ventriloquist}
-IDENTITY=${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | sed -n 's/.*"\(Developer ID Application: .*\)".*/\1/p' | head -1)}
+identity() { security find-identity -v -p codesigning | sed -n "s/.*\"\($1: .*\)\".*/\1/p" | head -1; }
+IDENTITY=${SIGN_IDENTITY:-$(identity "Developer ID Application")}
+DEVELOPMENT=$(identity "Apple Development")
 
 stop() { echo "release: $*" >&2; exit 1; }
 
-[ -n "$IDENTITY" ] || stop "there is no Developer ID Application certificate in the keychain."
+[ -n "$IDENTITY$DEVELOPMENT" ] || stop "the keychain has neither a Developer ID Application nor an Apple Development identity."
 xcrun notarytool history --keychain-profile "$PROFILE" >/dev/null 2>&1 || stop "no notarization credentials are saved as \"$PROFILE\" (xcrun notarytool store-credentials $PROFILE)."
 gh auth status >/dev/null 2>&1 || stop "gh isn't signed in."
 [ "$(git branch --show-current)" = main ] || stop "releases are cut from main."
@@ -51,15 +55,23 @@ notarize() {
   grep -q "status: Accepted" "$WORK/notary.log" || { cat "$WORK/notary.log" >&2; stop "Apple didn't accept $(basename "$1")."; }
 }
 
-SIGN_IDENTITY="$IDENTITY" scripts/bundle --updates
+if [ -n "$IDENTITY" ]; then
+  SIGN_IDENTITY="$IDENTITY" scripts/bundle --updates
+else
+  SIGN_IDENTITY="$DEVELOPMENT" scripts/bundle --updates
+  scripts/cloud-sign
+fi
 APP="dist/$NAME.app"
+codesign -dvv "$APP" 2>&1 | grep -q "^Authority=Developer ID Application:" || stop "$APP isn't signed with a Developer ID."
 ditto -c -k --keepParent "$APP" "$WORK/$NAME.zip"
 notarize "$WORK/$NAME.zip"
 xcrun stapler staple -q "$APP"
 
 scripts/dmg
 DMG="dist/$NAME.dmg"
-codesign --force --sign "$IDENTITY" --timestamp "$DMG"
+# A disk image can only be signed with a key that is here; unsigned, it is notarized and
+# stapled all the same, and the app inside carries the signature.
+[ -z "$IDENTITY" ] || codesign --force --sign "$IDENTITY" --timestamp "$DMG"
 notarize "$DMG"
 xcrun stapler staple -q "$DMG"
 
