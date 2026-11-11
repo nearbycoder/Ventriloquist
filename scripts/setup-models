@@ -1,0 +1,11 @@
+#!/bin/sh
+# Installs models from a terminal, the same way the app's Install buttons do.
+#
+#   scripts/setup-models --list
+#   scripts/setup-models kokoro chatterbox
+#   scripts/setup-models --all
+set -eu
+cd "$(dirname "$0")/.."
+PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
+command -v uv >/dev/null || { echo "uv isn't installed. Install it with: brew install uv" >&2; exit 1; }
+exec uv run --no-project --python 3.12 sidecar/setup.py "$@"

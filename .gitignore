@@ -1,0 +1,34 @@
+# Build output
+target/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# macOS
+.DS_Store
+
+# Model weights and audio never belong here: the app downloads every model on demand.
+*.safetensors
+*.gguf
+*.ggml
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.npz
+*.mlmodel
+*.mlpackage/
+*.wav
+*.mp3
+*.flac
+
+# Signing material
+*.p12
+*.p8
+*.pem
+*.key
+*.mobileprovision

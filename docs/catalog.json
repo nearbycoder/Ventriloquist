@@ -1,0 +1,4375 @@
+{
+  "envs": {
+    "mlx": {
+      "python": "3.12",
+      "packages": [
+        "mlx-audio[tts,stt,sts]==0.6.5",
+        "misaki[en,zh]==0.9.4",
+        "fugashi",
+        "jaconv",
+        "mojimoji",
+        "pyopenjtalk",
+        "unidic-lite",
+        "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"
+      ]
+    },
+    "chatterbox": {
+      "python": "3.11",
+      "packages": [
+        "chatterbox-tts==0.1.7",
+        "setuptools<81"
+      ]
+    },
+    "seedvc": {
+      "python": "3.10",
+      "packages": [
+        "torch==2.6.0",
+        "torchaudio==2.6.0",
+        "scipy==1.13.1",
+        "librosa==0.10.2",
+        "huggingface-hub>=0.28.1,<1.0",
+        "munch==4.0.0",
+        "einops==0.8.0",
+        "descript-audio-codec==1.0.0",
+        "pydub==0.25.1",
+        "transformers==4.46.3",
+        "soundfile==0.12.1",
+        "numpy==1.26.4",
+        "pyyaml",
+        "hydra-core==1.3.2",
+        "accelerate"
+      ],
+      "git": [
+        {
+          "url": "https://github.com/Plachtaa/seed-vc.git",
+          "rev": "51383efd921027683c89e5348211d93ff12ac2a8",
+          "dir": "seed-vc"
+        }
+      ]
+    },
+    "coqui": {
+      "python": "3.12",
+      "packages": [
+        "coqui-tts==0.28.0",
+        "torch==2.8.0",
+        "torchaudio==2.8.0",
+        "six"
+      ]
+    },
+    "kitten": {
+      "python": "3.12",
+      "packages": [
+        "kittenml[mlx]==0.9.7"
+      ]
+    },
+    "zonos": {
+      "python": "3.12",
+      "packages": [],
+      "git": [
+        {
+          "url": "https://github.com/Zyphra/ZONOS3-Mini.git",
+          "rev": "9de6e39a09f5fc3fba0a8bbf8ce946ea51a83222",
+          "dir": "zonos3",
+          "submodules": [
+            "third_party/fusealign-multilingual"
+          ],
+          "sync": "zonos3-mlx"
+        }
+      ]
+    }
+  },
+  "models": [
+    {
+      "id": "kokoro",
+      "name": "Kokoro",
+      "maker": "hexgrad",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/Kokoro-82M-bf16",
+      "summary": "An 82M-parameter model that sounds far bigger than it is. The fastest thing here by a wide margin, with 54 voices across nine languages and no cloning.",
+      "license": "Apache-2.0",
+      "released": "2024-12",
+      "size": "0.7 GB",
+      "languages": "9 languages",
+      "voices": [
+        {
+          "id": "af_heart",
+          "name": "Heart",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_bella",
+          "name": "Bella",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_nicole",
+          "name": "Nicole",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_aoede",
+          "name": "Aoede",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_kore",
+          "name": "Kore",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_sarah",
+          "name": "Sarah",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_nova",
+          "name": "Nova",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_sky",
+          "name": "Sky",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_alloy",
+          "name": "Alloy",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_jessica",
+          "name": "Jessica",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "af_river",
+          "name": "River",
+          "group": "English (US)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "am_michael",
+          "name": "Michael",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "am_fenrir",
+          "name": "Fenrir",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "am_puck",
+          "name": "Puck",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "am_echo",
+          "name": "Echo",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "am_eric",
+          "name": "Eric",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "am_liam",
+          "name": "Liam",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "am_onyx",
+          "name": "Onyx",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "am_adam",
+          "name": "Adam",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "am_santa",
+          "name": "Santa",
+          "group": "English (US)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "bf_emma",
+          "name": "Emma",
+          "group": "English (UK)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "bf_isabella",
+          "name": "Isabella",
+          "group": "English (UK)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "bf_alice",
+          "name": "Alice",
+          "group": "English (UK)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "bf_lily",
+          "name": "Lily",
+          "group": "English (UK)",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "bm_george",
+          "name": "George",
+          "group": "English (UK)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "bm_fable",
+          "name": "Fable",
+          "group": "English (UK)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "bm_lewis",
+          "name": "Lewis",
+          "group": "English (UK)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "bm_daniel",
+          "name": "Daniel",
+          "group": "English (UK)",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "ef_dora",
+          "name": "Dora",
+          "group": "Spanish",
+          "detail": "Female",
+          "lang": "es"
+        },
+        {
+          "id": "em_alex",
+          "name": "Alex",
+          "group": "Spanish",
+          "detail": "Male",
+          "lang": "es"
+        },
+        {
+          "id": "em_santa",
+          "name": "Santa",
+          "group": "Spanish",
+          "detail": "Male",
+          "lang": "es"
+        },
+        {
+          "id": "ff_siwis",
+          "name": "Siwis",
+          "group": "French",
+          "detail": "Female",
+          "lang": "fr"
+        },
+        {
+          "id": "hf_alpha",
+          "name": "Alpha",
+          "group": "Hindi",
+          "detail": "Female",
+          "lang": "hi"
+        },
+        {
+          "id": "hf_beta",
+          "name": "Beta",
+          "group": "Hindi",
+          "detail": "Female",
+          "lang": "hi"
+        },
+        {
+          "id": "hm_omega",
+          "name": "Omega",
+          "group": "Hindi",
+          "detail": "Male",
+          "lang": "hi"
+        },
+        {
+          "id": "hm_psi",
+          "name": "Psi",
+          "group": "Hindi",
+          "detail": "Male",
+          "lang": "hi"
+        },
+        {
+          "id": "if_sara",
+          "name": "Sara",
+          "group": "Italian",
+          "detail": "Female",
+          "lang": "it"
+        },
+        {
+          "id": "im_nicola",
+          "name": "Nicola",
+          "group": "Italian",
+          "detail": "Male",
+          "lang": "it"
+        },
+        {
+          "id": "jf_alpha",
+          "name": "Alpha",
+          "group": "Japanese",
+          "detail": "Female",
+          "lang": "ja"
+        },
+        {
+          "id": "jf_gongitsune",
+          "name": "Gongitsune",
+          "group": "Japanese",
+          "detail": "Female",
+          "lang": "ja"
+        },
+        {
+          "id": "jf_nezumi",
+          "name": "Nezumi",
+          "group": "Japanese",
+          "detail": "Female",
+          "lang": "ja"
+        },
+        {
+          "id": "jf_tebukuro",
+          "name": "Tebukuro",
+          "group": "Japanese",
+          "detail": "Female",
+          "lang": "ja"
+        },
+        {
+          "id": "jm_kumo",
+          "name": "Kumo",
+          "group": "Japanese",
+          "detail": "Male",
+          "lang": "ja"
+        },
+        {
+          "id": "pf_dora",
+          "name": "Dora",
+          "group": "Portuguese (Brazil)",
+          "detail": "Female",
+          "lang": "pt"
+        },
+        {
+          "id": "pm_alex",
+          "name": "Alex",
+          "group": "Portuguese (Brazil)",
+          "detail": "Male",
+          "lang": "pt"
+        },
+        {
+          "id": "pm_santa",
+          "name": "Santa",
+          "group": "Portuguese (Brazil)",
+          "detail": "Male",
+          "lang": "pt"
+        },
+        {
+          "id": "zf_xiaobei",
+          "name": "Xiaobei",
+          "group": "Mandarin Chinese",
+          "detail": "Female",
+          "lang": "zh"
+        },
+        {
+          "id": "zf_xiaoni",
+          "name": "Xiaoni",
+          "group": "Mandarin Chinese",
+          "detail": "Female",
+          "lang": "zh"
+        },
+        {
+          "id": "zf_xiaoxiao",
+          "name": "Xiaoxiao",
+          "group": "Mandarin Chinese",
+          "detail": "Female",
+          "lang": "zh"
+        },
+        {
+          "id": "zf_xiaoyi",
+          "name": "Xiaoyi",
+          "group": "Mandarin Chinese",
+          "detail": "Female",
+          "lang": "zh"
+        },
+        {
+          "id": "zm_yunjian",
+          "name": "Yunjian",
+          "group": "Mandarin Chinese",
+          "detail": "Male",
+          "lang": "zh"
+        },
+        {
+          "id": "zm_yunxi",
+          "name": "Yunxi",
+          "group": "Mandarin Chinese",
+          "detail": "Male",
+          "lang": "zh"
+        },
+        {
+          "id": "zm_yunxia",
+          "name": "Yunxia",
+          "group": "Mandarin Chinese",
+          "detail": "Male",
+          "lang": "zh"
+        },
+        {
+          "id": "zm_yunyang",
+          "name": "Yunyang",
+          "group": "Mandarin Chinese",
+          "detail": "Male",
+          "lang": "zh"
+        }
+      ],
+      "voice_default": "af_heart",
+      "options": {
+        "lang_from_voice": true,
+        "espeak": true,
+        "warm": true
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/Kokoro-82M-bf16",
+          "allow": [
+            "config.json",
+            "*.safetensors",
+            "voices/*.safetensors"
+          ]
+        }
+      ],
+      "note": "A voice reads its own language: pick a Spanish voice for Spanish text. Outside English, Japanese and Chinese, put long passages on separate lines or they may be cut short.",
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone."
+      }
+    },
+    {
+      "id": "phonon",
+      "name": "Phonon 31M",
+      "maker": "Gradium",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "gradium/phonon-31m-en",
+      "summary": "A 31M-parameter streaming model built for latency: 37 English voices, a dozen of them storybook characters, in a model small enough to load in a blink.",
+      "license": "Apache-2.0",
+      "released": "2026-10",
+      "size": "0.1 GB",
+      "languages": "English",
+      "downloads": [
+        {
+          "repo": "gradium/phonon-31m-en",
+          "ignore": [
+            "*.gguf"
+          ]
+        },
+        {
+          "repo": "gradium/phonon-voices",
+          "allow": [
+            "voices/*.safetensors",
+            "voices.jsonl"
+          ]
+        }
+      ],
+      "options": {
+        "voice_files": {
+          "repo": "gradium/phonon-voices",
+          "path": "voices/{id}.safetensors"
+        }
+      },
+      "voice_default": "default",
+      "voices": [
+        {
+          "id": "default",
+          "name": "Default",
+          "group": "English (US)",
+          "detail": "The voice the model ships with",
+          "lang": "en"
+        },
+        {
+          "id": "NbpkqMVS3CJeq2j8",
+          "name": "Zoey",
+          "group": "English (US)",
+          "detail": "Female, adult · Playful, upbeat and Gen Z energy voice with a standard American accent. Perfect for engaging conversations!",
+          "lang": "en"
+        },
+        {
+          "id": "NIWIOv5vTi5eRMj8",
+          "name": "Juniper",
+          "group": "English (US)",
+          "detail": "Female, young adult · Cheerful presence with real resonance under it, personable when the copy turns intimate and decisive on the final line.",
+          "lang": "en"
+        },
+        {
+          "id": "vjFyp2BcCyTlUmYb",
+          "name": "Everly",
+          "group": "English (US)",
+          "detail": "Female, middle-age · Rounded, soft-edged tone with gentle lift at the end of phrases and an easy, relaxed delivery.",
+          "lang": "en"
+        },
+        {
+          "id": "4SZHfMpw-p46Ywgs",
+          "name": "Harper",
+          "group": "English (US)",
+          "detail": "Female, adult · Modern, confident and friendly voice with a standard American accent.",
+          "lang": "en"
+        },
+        {
+          "id": "bXwrkHhURL1VFJdG",
+          "name": "Hadley",
+          "group": "English (US)",
+          "detail": "Female, middle-age · Settled, even-toned and genuinely kind, with crisp consonants that hold up over a handset.",
+          "lang": "en"
+        },
+        {
+          "id": "nGzMHMPAWGaJFHOo",
+          "name": "Delia",
+          "group": "English (US)",
+          "detail": "Female, middle-age · Low, grounded and quick to the point, with a sincerity that keeps an apology honest.",
+          "lang": "en"
+        },
+        {
+          "id": "LMDIYE0Oa377Qh6Z",
+          "name": "Easton",
+          "group": "English (US)",
+          "detail": "Male, young adult · Punchy and close in, with crisp consonant attack that cuts through a music bed and pitch that lifts across each line.",
+          "lang": "en"
+        },
+        {
+          "id": "40QrMVgAxFiUnP9f",
+          "name": "Micah",
+          "group": "English (US)",
+          "detail": "Male, young adult · Buoyant and high in energy, with a playful lift at the ends of phrases and clean attack that survives a loud mix.",
+          "lang": "en"
+        },
+        {
+          "id": "0zLApsZfVLLNaEGl",
+          "name": "Trevor",
+          "group": "English (US)",
+          "detail": "Male, middle-age · Buoyant energy over a resonant mid-low core, phrases landing softly and consonants cutting through a handset.",
+          "lang": "en"
+        },
+        {
+          "id": "_6Aslh2DxfmnRLmP",
+          "name": "Russell",
+          "group": "English (US)",
+          "detail": "Male, adult · A high-energy American adult voice that pushes and encourages with the intensity of someone who genuinely believes in you.",
+          "lang": "en"
+        },
+        {
+          "id": "qIxlZ7Ei8KvWlyQH",
+          "name": "Preston",
+          "group": "English (US)",
+          "detail": "Male, middle-age · Trim, focused delivery with clean edges on every consonant and a steady, low-set core that carries through phone bandwidth.",
+          "lang": "en"
+        },
+        {
+          "id": "d9XCyhjo4JhkHF1d",
+          "name": "Miles",
+          "group": "English (US)",
+          "detail": "Male, young adult · Resonant and decisive, with genuine dynamic range, dropping right down for one clause then driving back up.",
+          "lang": "en"
+        },
+        {
+          "id": "6PWnV0Nq4wu7RVBT",
+          "name": "Maeve",
+          "group": "English (UK)",
+          "detail": "Female, adult · A sparky, attentive British English adult voice that gets to the point with a smile. Ideal for fast, efficient customer support and helpful voice assistants.",
+          "lang": "en"
+        },
+        {
+          "id": "GgfEkEJtxZR7gnpy",
+          "name": "Freya",
+          "group": "English (UK)",
+          "detail": "Female, young · A young British voice, glossy and confident with fast, girly chatter and bubbly sparkle, perfect for a friendly receptionist or assistant.",
+          "lang": "en"
+        },
+        {
+          "id": "uem82D50GRv2Dwma",
+          "name": "Pippa",
+          "group": "English (UK)",
+          "detail": "Female, adult · A confident, upbeat British English adult voice with infectious energy. Perfect for proactive assistants and motivating customer success calls.",
+          "lang": "en"
+        },
+        {
+          "id": "y9bQqIDnyxwqK01t",
+          "name": "Elodie-Rose",
+          "group": "English (UK)",
+          "detail": "Female, young · A young British voice with sharp, enthusiastic energy and crisp articulation, sparky and to the point for customer support and care.",
+          "lang": "en"
+        },
+        {
+          "id": "gDT1nz7Ie36ZhL-C",
+          "name": "Imogen",
+          "group": "English (UK)",
+          "detail": "Female, adult · A bubbly, friendly British English adult voice that puts callers instantly at ease. Great for onboarding assistants and warm concierge interactions.",
+          "lang": "en"
+        },
+        {
+          "id": "m9MxpY6IUGXtWp76",
+          "name": "Lottie",
+          "group": "English (UK)",
+          "detail": "Female, young adult · Sparky and to the point, high forward energy with clean edges on the consonants and the range to drop low for one line then climb back.",
+          "lang": "en"
+        },
+        {
+          "id": "X6NceqF285Gr04gb",
+          "name": "Alfie",
+          "group": "English (UK)",
+          "detail": "Male, young adult · Punchy and forward, with crisp consonant attack and a pitch that lifts across a line, sitting high over a music bed.",
+          "lang": "en"
+        },
+        {
+          "id": "YyKcxPG7iIgS3jsK",
+          "name": "Hugh",
+          "group": "English (UK)",
+          "detail": "Male, middle-age · Soft and close, airy in texture, with lively pitch movement and an attentive, sincere delivery.",
+          "lang": "en"
+        },
+        {
+          "id": "zUCxzrOrugTSis03",
+          "name": "Edwin",
+          "group": "English (UK)",
+          "detail": "Male, middle-age · Efficient and firm, sincere in attention, with tidy articulation that holds up at phone bandwidth.",
+          "lang": "en"
+        },
+        {
+          "id": "JOW0vchyswkQUMDS",
+          "name": "Spencer",
+          "group": "English (UK)",
+          "detail": "Male, middle-age · Light and airy, sitting a touch higher, with crisp consonants and a slow, patient delivery.",
+          "lang": "en"
+        },
+        {
+          "id": "dME3IWyZBvmh1n1q",
+          "name": "Toby",
+          "group": "English (UK)",
+          "detail": "Male, adult · A sparky, attentive British English adult voice that gets to the point with a smile. Ideal for fast, efficient customer support and helpful voice assistants.",
+          "lang": "en"
+        },
+        {
+          "id": "Zn7g6NxLqXlJb7Qi",
+          "name": "Teddy",
+          "group": "English (UK)",
+          "detail": "Male, young adult · Sparky and close in, quick off the mark, with firm consonants and the range to drop right down for a clause then come back up.",
+          "lang": "en"
+        },
+        {
+          "id": "gfP44RlHwr2kEwk7",
+          "name": "Bryony",
+          "group": "English (UK)",
+          "detail": "Female, middle-age · Full, rich mid-range tones, softly relaxed and spoken close to the mic, moving briskly with light pitch play.",
+          "lang": "en"
+        },
+        {
+          "id": "xPDpsV3F592srkjA",
+          "name": "Captain Silas Blackwater",
+          "group": "Characters",
+          "detail": "An old British pirate captain from the West Country, around sixty. Deep, gravelly and booming, rolling his Rs, salt-cracked from decades of shouting over gales. Roguish and hearty, with a wicked chuckle under every boast.",
+          "lang": "en"
+        },
+        {
+          "id": "nOykTmcH9ydsGGIc",
+          "name": "Morwenna of the Deep",
+          "group": "Characters",
+          "detail": "A sultry, seductive woman in her thirties. Low, husky alto, close to the microphone and almost whispered, slow and languid, purring, with a warm knowing smile in every word. Intimate, flirtatious and teasing, like a late-night torch singer luring someone closer, with a hint of danger underneath.",
+          "lang": "en"
+        },
+        {
+          "id": "lX3LavMNdlIbgEHH",
+          "name": "Old Mortlake",
+          "group": "Characters",
+          "detail": "An elderly gravedigger in a Victorian churchyard. Low, raspy and half whispered, melancholic, with heavy pauses that let every word settle like dirt on a coffin lid.",
+          "lang": "en"
+        },
+        {
+          "id": "dGyGDKo2osj7h3s7",
+          "name": "Azgorath",
+          "group": "Characters",
+          "detail": "An enormous ancient demon. A cavernous, impossibly deep bass voice that rumbles like stone grinding in a crypt, with a dry rasping edge and a faint hiss on every s. Calm, slow and amused, never shouting, every syllable set down deliberately, menace held under perfect control.",
+          "lang": "en"
+        },
+        {
+          "id": "cXoIXJ2llS8S0WOW",
+          "name": "Fennick the Young Elf",
+          "group": "Characters",
+          "detail": "A curious, kind-hearted elf boy of about ten. A natural child's voice in a warm, soft middle range, never squeaky or shrill, earnest and wide-eyed, a little breathless with excitement, speaking quickly when amazed. Clean, close studio recording with no background noise or hiss.",
+          "lang": "en"
+        },
+        {
+          "id": "GXaSqMEmOg12OIYb",
+          "name": "The Thing Under the Stairs",
+          "group": "Characters",
+          "detail": "A monstrous creature lurking in the dark. Gravelly, breathy and pitched near the floor, a threatening growl that stays quiet to stay frightening, with a slow mocking sneer.",
+          "lang": "en"
+        },
+        {
+          "id": "xO8xQo3BrB8FuI6J",
+          "name": "Vyrmathrax the Ancient",
+          "group": "Characters",
+          "detail": "An ancient dragon, thousands of years old. Very low and resonant, deep chest weight with gravel at the bottom of the register, slow and controlled with long pauses, dry and offhand, with the flat calm of something far too old to be impressed.",
+          "lang": "en"
+        },
+        {
+          "id": "cYtsRSxV5q9IMehn",
+          "name": "Grub the Ogre",
+          "group": "Characters",
+          "detail": "A big, good-natured ogre who lives under a bridge. Gruff and grainy, rumbling low end, heavy chest resonance, slow lumbering rhythm with loose rounded words, and warm humour sitting just under the grumble.",
+          "lang": "en"
+        },
+        {
+          "id": "gSgG5Tor0GPEnqzC",
+          "name": "Master Aldric",
+          "group": "Characters",
+          "detail": "A wise old British wizard, around eighty. Rich and resonant with an aged grain, warm and kindly, deliberate pace with weighted pauses before the words that matter, able to rise into a ringing incantation.",
+          "lang": "en"
+        },
+        {
+          "id": "NIWoEurJHMJjyUTe",
+          "name": "The Snow Queen",
+          "group": "Characters",
+          "detail": "A regal, cold-hearted queen of ice. A cool, crystalline mezzo voice, poised and elegant, precise articulation, unhurried and quietly commanding, with an enigmatic chill and a faint smile that never warms.",
+          "lang": "en"
+        },
+        {
+          "id": "y2eiKxtQo2B67deU",
+          "name": "Sir Bramwell",
+          "group": "Characters",
+          "detail": "A brave but pompous English knight, middle-aged. Booming, plummy and theatrical, full of puffed-up self-importance, rolling grand phrases, with a comic wobble of nerves showing through the bravado.",
+          "lang": "en"
+        },
+        {
+          "id": "QXNr0SvkukLB4wPq",
+          "name": "Fairy Godmother",
+          "group": "Characters",
+          "detail": "A kind fairy godmother, an older woman in her sixties. A low, warm, velvety alto voice, cosy and grandmotherly, unhurried and soothing, with a soft rich chuckle and a twinkle in every word. Gentle and reassuring, never high, never thin.",
+          "lang": "en"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone."
+      }
+    },
+    {
+      "id": "zonos3",
+      "name": "ZONOS3 Mini",
+      "maker": "Zyphra",
+      "kind": "tts",
+      "env": "zonos",
+      "adapter": "zonos",
+      "repo": "Zyphra/ZONOS3-Mini",
+      "summary": "A small, very fast model at 44.1 kHz: 27 voices in ten languages, cloning from a sample, and steering of mood, pace, texture and accent by named amounts. Runs on Zyphra's own MLX runtime.",
+      "license": "Apache-2.0",
+      "released": "2026-11",
+      "size": "2.9 GB",
+      "languages": "43 languages",
+      "voices": [
+        {
+          "id": "English/Cillian_en-Irish_M_1",
+          "name": "Cillian",
+          "group": "English",
+          "detail": "Irish, Male",
+          "lang": "en"
+        },
+        {
+          "id": "English/Imogen_en-British_F_1",
+          "name": "Imogen",
+          "group": "English",
+          "detail": "British, Female",
+          "lang": "en"
+        },
+        {
+          "id": "English/Jett_en-energetic_M_1",
+          "name": "Jett",
+          "group": "English",
+          "detail": "Energetic, Male",
+          "lang": "en"
+        },
+        {
+          "id": "English/Morgana_en-witch_F_1",
+          "name": "Morgana",
+          "group": "English",
+          "detail": "Witch, Female",
+          "lang": "en"
+        },
+        {
+          "id": "English/Rupert_en-British_M_1",
+          "name": "Rupert",
+          "group": "English",
+          "detail": "British, Male",
+          "lang": "en"
+        },
+        {
+          "id": "English/Sakura_en-anime_F_1",
+          "name": "Sakura",
+          "group": "English",
+          "detail": "Anime, Female",
+          "lang": "en"
+        },
+        {
+          "id": "English/Savannah_en-American_F_1",
+          "name": "Savannah",
+          "group": "English",
+          "detail": "American, Female",
+          "lang": "en"
+        },
+        {
+          "id": "English/Thaddeus_en-announcervoice_M_1",
+          "name": "Thaddeus",
+          "group": "English",
+          "detail": "Announcer, Male",
+          "lang": "en"
+        },
+        {
+          "id": "English/Willow_en-asrm_F_1",
+          "name": "Willow",
+          "group": "English",
+          "detail": "ASMR, Female",
+          "lang": "en"
+        },
+        {
+          "id": "English/Wyatt_en-American_M_1",
+          "name": "Wyatt",
+          "group": "English",
+          "detail": "American, Male",
+          "lang": "en"
+        },
+        {
+          "id": "French/Gaspard_fr_M_1",
+          "name": "Gaspard",
+          "group": "French",
+          "detail": "Male",
+          "lang": "fr"
+        },
+        {
+          "id": "German/Liesel_de_F_1",
+          "name": "Liesel",
+          "group": "German",
+          "detail": "Female",
+          "lang": "de"
+        },
+        {
+          "id": "German/Wolfgang_de_M_1",
+          "name": "Wolfgang",
+          "group": "German",
+          "detail": "Male",
+          "lang": "de"
+        },
+        {
+          "id": "Hindi/Ananya_hi_F_1",
+          "name": "Ananya",
+          "group": "Hindi",
+          "detail": "Female",
+          "lang": "hi"
+        },
+        {
+          "id": "Hindi/Arjun_hi_M_1",
+          "name": "Arjun",
+          "group": "Hindi",
+          "detail": "Male",
+          "lang": "hi"
+        },
+        {
+          "id": "Italian/Ginevra_it_F_1",
+          "name": "Ginevra",
+          "group": "Italian",
+          "detail": "Female",
+          "lang": "it"
+        },
+        {
+          "id": "Italian/Lorenzo_it_M_1",
+          "name": "Lorenzo",
+          "group": "Italian",
+          "detail": "Male",
+          "lang": "it"
+        },
+        {
+          "id": "Korean/Minjun_ko_M_1",
+          "name": "Minjun",
+          "group": "Korean",
+          "detail": "Male",
+          "lang": "ko"
+        },
+        {
+          "id": "Korean/Seoyeon_ko_F_1",
+          "name": "Seoyeon",
+          "group": "Korean",
+          "detail": "Female",
+          "lang": "ko"
+        },
+        {
+          "id": "Mandarin Chinese/Haoran_zh-energetic_M_1",
+          "name": "Haoran",
+          "group": "Mandarin Chinese",
+          "detail": "Energetic, Male",
+          "lang": "zh"
+        },
+        {
+          "id": "Mandarin Chinese/Meilin_zh-energetic_F_1",
+          "name": "Meilin",
+          "group": "Mandarin Chinese",
+          "detail": "Energetic, Female",
+          "lang": "zh"
+        },
+        {
+          "id": "Portuguese/Leonor_pt_F_1",
+          "name": "Leonor",
+          "group": "Portuguese",
+          "detail": "Female",
+          "lang": "pt"
+        },
+        {
+          "id": "Portuguese/Thiago_pt_M_1",
+          "name": "Thiago",
+          "group": "Portuguese",
+          "detail": "Male",
+          "lang": "pt"
+        },
+        {
+          "id": "Spanish/Rodrigo_es_M_1",
+          "name": "Rodrigo",
+          "group": "Spanish",
+          "detail": "Male",
+          "lang": "es"
+        },
+        {
+          "id": "Spanish/Ximena_es_F_1",
+          "name": "Ximena",
+          "group": "Spanish",
+          "detail": "Female",
+          "lang": "es"
+        },
+        {
+          "id": "Telugu/Chaitanya_te_M_1",
+          "name": "Chaitanya",
+          "group": "Telugu",
+          "detail": "Male",
+          "lang": "te"
+        },
+        {
+          "id": "Telugu/Sravya_te_F_1",
+          "name": "Sravya",
+          "group": "Telugu",
+          "detail": "Female",
+          "lang": "te"
+        }
+      ],
+      "voice_default": "English/Savannah_en-American_F_1",
+      "cloning": "optional",
+      "instruct": "optional",
+      "instruct_hint": "Controls: happy, whisper, slower 2, british accent, deep 3, or a preset such as Late-night radio",
+      "note": "Direction is a list of the model's own controls, each with an optional amount: a mood (happy, sad, angry, calm, scared, confused), delivery (whisper, loud, slower, faster, chatty, hesitant, lively, emphasis), the voice itself (lower, higher, younger, older, masculine, feminine, deep, bright, husky, raspy, soft, authority), an accent (british accent, scottish, irish, australian, indian) or a studio preset (BBC newsreader, Gravelly old man, Late-night radio). Strong amounts change who the voice sounds like. A language with no voice of its own here reads best in a voice from a nearby language, or a sample. Numbers and dates are read as written: the text normaliser the model was trained with has no macOS build.",
+      "options": {
+        "decoder": "full_mr"
+      },
+      "downloads": [
+        {
+          "repo": "Zyphra/ZONOS3-Mini",
+          "allow": [
+            "gguf/zonos3-ptq.gguf",
+            "gguf/zac.gguf",
+            "gguf/spk-encoder.gguf",
+            "gguf/steer.gguf",
+            "gguf/voices/*.embedding.npy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kitten",
+      "name": "Kitten TTS 2",
+      "maker": "KittenML",
+      "kind": "tts",
+      "env": "kitten",
+      "adapter": "kitten",
+      "repo": "KittenML/kitten-tts-2",
+      "summary": "A 1.7B speech language model packed into under a gigabyte of ternary weights. 115 voices across 16 languages, cloning from a sample, and emotion tags.",
+      "license": "Stellon Labs Community",
+      "released": "2026-09",
+      "caution": "Revenue-capped licence",
+      "size": "2.0 GB",
+      "languages": "16 languages",
+      "voices": [
+        {
+          "id": "Alfred",
+          "name": "Alfred",
+          "group": "English",
+          "detail": "Tender older male",
+          "lang": "en"
+        },
+        {
+          "id": "Bella",
+          "name": "Bella",
+          "group": "English",
+          "detail": "Female, carried over from KittenTTS 0.8",
+          "lang": "en"
+        },
+        {
+          "id": "Bruno",
+          "name": "Bruno",
+          "group": "English",
+          "detail": "Male, carried over from KittenTTS 0.8",
+          "lang": "en"
+        },
+        {
+          "id": "Claire",
+          "name": "Claire",
+          "group": "English",
+          "detail": "Playful professional female",
+          "lang": "en"
+        },
+        {
+          "id": "Dante",
+          "name": "Dante",
+          "group": "English",
+          "detail": "Playful smooth young male",
+          "lang": "en"
+        },
+        {
+          "id": "Diana",
+          "name": "Diana",
+          "group": "English",
+          "detail": "Stern military officer female",
+          "lang": "en"
+        },
+        {
+          "id": "Dolores",
+          "name": "Dolores",
+          "group": "English",
+          "detail": "Southern elderly female",
+          "lang": "en"
+        },
+        {
+          "id": "Edith",
+          "name": "Edith",
+          "group": "English",
+          "detail": "Elderly grandmother soft female",
+          "lang": "en"
+        },
+        {
+          "id": "Eleanor",
+          "name": "Eleanor",
+          "group": "English",
+          "detail": "Somber historian female",
+          "lang": "en"
+        },
+        {
+          "id": "Elliot",
+          "name": "Elliot",
+          "group": "English",
+          "detail": "Grieving young male",
+          "lang": "en"
+        },
+        {
+          "id": "Frank",
+          "name": "Frank",
+          "group": "English",
+          "detail": "Grizzled war veteran gravelly male",
+          "lang": "en"
+        },
+        {
+          "id": "Grace",
+          "name": "Grace",
+          "group": "English",
+          "detail": "Soothing nurse female",
+          "lang": "en"
+        },
+        {
+          "id": "Herbert",
+          "name": "Herbert",
+          "group": "English",
+          "detail": "Elderly professor wise male",
+          "lang": "en"
+        },
+        {
+          "id": "Hugo",
+          "name": "Hugo",
+          "group": "English",
+          "detail": "Male, carried over from KittenTTS 0.8",
+          "lang": "en"
+        },
+        {
+          "id": "Iris",
+          "name": "Iris",
+          "group": "English",
+          "detail": "Hushed museum guide female",
+          "lang": "en"
+        },
+        {
+          "id": "Jasper",
+          "name": "Jasper",
+          "group": "English",
+          "detail": "Male, carried over from KittenTTS 0.8",
+          "lang": "en"
+        },
+        {
+          "id": "Julian",
+          "name": "Julian",
+          "group": "English",
+          "detail": "Dreamy poet soft male",
+          "lang": "en"
+        },
+        {
+          "id": "Kiki",
+          "name": "Kiki",
+          "group": "English",
+          "detail": "Female, carried over from KittenTTS 0.8",
+          "lang": "en"
+        },
+        {
+          "id": "Laurence",
+          "name": "Laurence",
+          "group": "English",
+          "detail": "Dramatic stage actor male",
+          "lang": "en"
+        },
+        {
+          "id": "Leo",
+          "name": "Leo",
+          "group": "English",
+          "detail": "Male, carried over from KittenTTS 0.8",
+          "lang": "en"
+        },
+        {
+          "id": "Luna",
+          "name": "Luna",
+          "group": "English",
+          "detail": "Female, carried over from KittenTTS 0.8",
+          "lang": "en"
+        },
+        {
+          "id": "Maeve",
+          "name": "Maeve",
+          "group": "English",
+          "detail": "Warm storyteller cozy female",
+          "lang": "en"
+        },
+        {
+          "id": "Marcus",
+          "name": "Marcus",
+          "group": "English",
+          "detail": "Radio dj smooth male",
+          "lang": "en"
+        },
+        {
+          "id": "Martha",
+          "name": "Martha",
+          "group": "English",
+          "detail": "Weathered radio journalist female",
+          "lang": "en"
+        },
+        {
+          "id": "Matthew",
+          "name": "Matthew",
+          "group": "English",
+          "detail": "Exhausted mechanic male",
+          "lang": "en"
+        },
+        {
+          "id": "Miles",
+          "name": "Miles",
+          "group": "English",
+          "detail": "Gentle librarian male",
+          "lang": "en"
+        },
+        {
+          "id": "Otis",
+          "name": "Otis",
+          "group": "English",
+          "detail": "Rumbling blues musician male",
+          "lang": "en"
+        },
+        {
+          "id": "Raven",
+          "name": "Raven",
+          "group": "English",
+          "detail": "Controlled fury young female",
+          "lang": "en"
+        },
+        {
+          "id": "Reginald",
+          "name": "Reginald",
+          "group": "English",
+          "detail": "Distinguished elderly diplomat male",
+          "lang": "en"
+        },
+        {
+          "id": "Rosie",
+          "name": "Rosie",
+          "group": "English",
+          "detail": "Female, carried over from KittenTTS 0.8",
+          "lang": "en"
+        },
+        {
+          "id": "Sable",
+          "name": "Sable",
+          "group": "English",
+          "detail": "Hushed conspirator female",
+          "lang": "en"
+        },
+        {
+          "id": "Saoirse",
+          "name": "Saoirse",
+          "group": "English",
+          "detail": "Joyful irish female",
+          "lang": "en"
+        },
+        {
+          "id": "Serena",
+          "name": "Serena",
+          "group": "English",
+          "detail": "Gentle yoga instructor female",
+          "lang": "en"
+        },
+        {
+          "id": "Victor",
+          "name": "Victor",
+          "group": "English",
+          "detail": "Controlled fury older male",
+          "lang": "en"
+        },
+        {
+          "id": "Victoria",
+          "name": "Victoria",
+          "group": "English",
+          "detail": "Regal narrator female",
+          "lang": "en"
+        },
+        {
+          "id": "Vincent",
+          "name": "Vincent",
+          "group": "English",
+          "detail": "Hushed museum guide male",
+          "lang": "en"
+        },
+        {
+          "id": "Walter",
+          "name": "Walter",
+          "group": "English",
+          "detail": "Warm grandfather male",
+          "lang": "en"
+        },
+        {
+          "id": "Willow",
+          "name": "Willow",
+          "group": "English",
+          "detail": "Hushed young female",
+          "lang": "en"
+        },
+        {
+          "id": "AirportAnnouncer",
+          "name": "Airport Announcer",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "AudiobookNarratorFemale",
+          "name": "Audiobook Narrator Female",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "BoredTeenager",
+          "name": "Bored Teenager",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "CalmHostageNegotiator",
+          "name": "Calm Hostage Negotiator",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "FairytaleNarratorWhimsical",
+          "name": "Fairytale Narrator Whimsical",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "GrandmaBedtimeStory",
+          "name": "Grandma Bedtime Story",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "GriefEulogy",
+          "name": "Grief Eulogy",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "NervousFirstDate",
+          "name": "Nervous First Date",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "NewsAnchorFemale",
+          "name": "News Anchor Female",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "PilotCabinAnnouncement",
+          "name": "Pilot Cabin Announcement",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "SarcasticCoworker",
+          "name": "Sarcastic Coworker",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "WeatherPresenterCheerful",
+          "name": "Weather Presenter Cheerful",
+          "group": "English characters",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "Arabic",
+          "name": "Arabic",
+          "group": "Arabic",
+          "detail": "",
+          "lang": "ar"
+        },
+        {
+          "id": "ArabicFalconer",
+          "name": "Falconer",
+          "group": "Arabic",
+          "detail": "",
+          "lang": "ar"
+        },
+        {
+          "id": "ArabicMother",
+          "name": "Mother",
+          "group": "Arabic",
+          "detail": "",
+          "lang": "ar"
+        },
+        {
+          "id": "ArabicNews",
+          "name": "News",
+          "group": "Arabic",
+          "detail": "",
+          "lang": "ar"
+        },
+        {
+          "id": "Chinese",
+          "name": "Chinese",
+          "group": "Chinese",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "ChineseLivestreamSeller",
+          "name": "Livestream Seller",
+          "group": "Chinese",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "ChineseNewsCctv",
+          "name": "News Cctv",
+          "group": "Chinese",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "ChineseXianxiaMaster",
+          "name": "Xianxia Master",
+          "group": "Chinese",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "DutchBaker",
+          "name": "Baker",
+          "group": "Dutch",
+          "detail": "",
+          "lang": "nl"
+        },
+        {
+          "id": "DutchGrandpaStory",
+          "name": "Grandpa Story",
+          "group": "Dutch",
+          "detail": "",
+          "lang": "nl"
+        },
+        {
+          "id": "DutchWeatherPresenter",
+          "name": "Weather Presenter",
+          "group": "Dutch",
+          "detail": "",
+          "lang": "nl"
+        },
+        {
+          "id": "French",
+          "name": "French",
+          "group": "French",
+          "detail": "",
+          "lang": "fr"
+        },
+        {
+          "id": "FrenchDocumentary",
+          "name": "Documentary",
+          "group": "French",
+          "detail": "",
+          "lang": "fr"
+        },
+        {
+          "id": "FrenchGrandmereRecette",
+          "name": "Grandmere Recette",
+          "group": "French",
+          "detail": "",
+          "lang": "fr"
+        },
+        {
+          "id": "FrenchTeacher",
+          "name": "Teacher",
+          "group": "French",
+          "detail": "",
+          "lang": "fr"
+        },
+        {
+          "id": "FrenchWaiter",
+          "name": "Waiter",
+          "group": "French",
+          "detail": "",
+          "lang": "fr"
+        },
+        {
+          "id": "German",
+          "name": "German",
+          "group": "German",
+          "detail": "",
+          "lang": "de"
+        },
+        {
+          "id": "GermanKneipe",
+          "name": "Kneipe",
+          "group": "German",
+          "detail": "",
+          "lang": "de"
+        },
+        {
+          "id": "GermanProfessor",
+          "name": "Professor",
+          "group": "German",
+          "detail": "",
+          "lang": "de"
+        },
+        {
+          "id": "GermanTrainAnnouncement",
+          "name": "Train Announcement",
+          "group": "German",
+          "detail": "",
+          "lang": "de"
+        },
+        {
+          "id": "Hindi",
+          "name": "Hindi",
+          "group": "Hindi",
+          "detail": "",
+          "lang": "hi"
+        },
+        {
+          "id": "HindiBollywoodDrama",
+          "name": "Bollywood Drama",
+          "group": "Hindi",
+          "detail": "",
+          "lang": "hi"
+        },
+        {
+          "id": "HindiCollegeFriends",
+          "name": "College Friends",
+          "group": "Hindi",
+          "detail": "",
+          "lang": "hi"
+        },
+        {
+          "id": "HindiDadiKahani",
+          "name": "Dadi Kahani",
+          "group": "Hindi",
+          "detail": "",
+          "lang": "hi"
+        },
+        {
+          "id": "HindiYogaTeacher",
+          "name": "Yoga Teacher",
+          "group": "Hindi",
+          "detail": "",
+          "lang": "hi"
+        },
+        {
+          "id": "IndonesianNewsAnchor",
+          "name": "News Anchor",
+          "group": "Indonesian",
+          "detail": "",
+          "lang": "id"
+        },
+        {
+          "id": "IndonesianTourGuide",
+          "name": "Tour Guide",
+          "group": "Indonesian",
+          "detail": "",
+          "lang": "id"
+        },
+        {
+          "id": "Italian",
+          "name": "Italian",
+          "group": "Italian",
+          "detail": "",
+          "lang": "it"
+        },
+        {
+          "id": "ItalianFashionDesigner",
+          "name": "Fashion Designer",
+          "group": "Italian",
+          "detail": "",
+          "lang": "it"
+        },
+        {
+          "id": "ItalianFootballFan",
+          "name": "Football Fan",
+          "group": "Italian",
+          "detail": "",
+          "lang": "it"
+        },
+        {
+          "id": "ItalianGondolier",
+          "name": "Gondolier",
+          "group": "Italian",
+          "detail": "",
+          "lang": "it"
+        },
+        {
+          "id": "ItalianNonnaKitchen",
+          "name": "Nonna Kitchen",
+          "group": "Italian",
+          "detail": "",
+          "lang": "it"
+        },
+        {
+          "id": "ItalianOperaTenor",
+          "name": "Opera Tenor",
+          "group": "Italian",
+          "detail": "",
+          "lang": "it"
+        },
+        {
+          "id": "JapaneseAnimeHeroine",
+          "name": "Anime Heroine",
+          "group": "Japanese",
+          "detail": "",
+          "lang": "ja"
+        },
+        {
+          "id": "JapaneseGrandma",
+          "name": "Grandma",
+          "group": "Japanese",
+          "detail": "",
+          "lang": "ja"
+        },
+        {
+          "id": "JapaneseSalarymanApology",
+          "name": "Salaryman Apology",
+          "group": "Japanese",
+          "detail": "",
+          "lang": "ja"
+        },
+        {
+          "id": "JapaneseTrainConductor",
+          "name": "Train Conductor",
+          "group": "Japanese",
+          "detail": "",
+          "lang": "ja"
+        },
+        {
+          "id": "KoreanGrandpaAdvice",
+          "name": "Grandpa Advice",
+          "group": "Korean",
+          "detail": "",
+          "lang": "ko"
+        },
+        {
+          "id": "KoreanKdramaConfession",
+          "name": "Kdrama Confession",
+          "group": "Korean",
+          "detail": "",
+          "lang": "ko"
+        },
+        {
+          "id": "KoreanNewsAnchor",
+          "name": "News Anchor",
+          "group": "Korean",
+          "detail": "",
+          "lang": "ko"
+        },
+        {
+          "id": "PolishBabciaPierogi",
+          "name": "Babcia Pierogi",
+          "group": "Polish",
+          "detail": "",
+          "lang": "pl"
+        },
+        {
+          "id": "PolishMountainGuide",
+          "name": "Mountain Guide",
+          "group": "Polish",
+          "detail": "",
+          "lang": "pl"
+        },
+        {
+          "id": "PolishNewsAnchor",
+          "name": "News Anchor",
+          "group": "Polish",
+          "detail": "",
+          "lang": "pl"
+        },
+        {
+          "id": "PolishPoetryStudent",
+          "name": "Poetry Student",
+          "group": "Polish",
+          "detail": "",
+          "lang": "pl"
+        },
+        {
+          "id": "Portuguese",
+          "name": "Portuguese",
+          "group": "Portuguese",
+          "detail": "",
+          "lang": "pt"
+        },
+        {
+          "id": "PortugueseBeach",
+          "name": "Beach",
+          "group": "Portuguese",
+          "detail": "",
+          "lang": "pt"
+        },
+        {
+          "id": "PortugueseBusiness",
+          "name": "Business",
+          "group": "Portuguese",
+          "detail": "",
+          "lang": "pt"
+        },
+        {
+          "id": "PortugueseFado",
+          "name": "Fado",
+          "group": "Portuguese",
+          "detail": "",
+          "lang": "pt"
+        },
+        {
+          "id": "PortugueseGrandpaFarm",
+          "name": "Grandpa Farm",
+          "group": "Portuguese",
+          "detail": "",
+          "lang": "pt"
+        },
+        {
+          "id": "PortugueseNewsAnchor",
+          "name": "News Anchor",
+          "group": "Portuguese",
+          "detail": "",
+          "lang": "pt"
+        },
+        {
+          "id": "Russian",
+          "name": "Russian",
+          "group": "Russian",
+          "detail": "",
+          "lang": "ru"
+        },
+        {
+          "id": "RussianBabushka",
+          "name": "Babushka",
+          "group": "Russian",
+          "detail": "",
+          "lang": "ru"
+        },
+        {
+          "id": "RussianFairyTale",
+          "name": "Fairy Tale",
+          "group": "Russian",
+          "detail": "",
+          "lang": "ru"
+        },
+        {
+          "id": "RussianHockeyCheer",
+          "name": "Hockey Cheer",
+          "group": "Russian",
+          "detail": "",
+          "lang": "ru"
+        },
+        {
+          "id": "RussianLiteratureTeacher",
+          "name": "Literature Teacher",
+          "group": "Russian",
+          "detail": "",
+          "lang": "ru"
+        },
+        {
+          "id": "RussianSpaceControl",
+          "name": "Space Control",
+          "group": "Russian",
+          "detail": "",
+          "lang": "ru"
+        },
+        {
+          "id": "RussianTaxiDriver",
+          "name": "Taxi Driver",
+          "group": "Russian",
+          "detail": "",
+          "lang": "ru"
+        },
+        {
+          "id": "Spanish",
+          "name": "Spanish",
+          "group": "Spanish",
+          "detail": "",
+          "lang": "es"
+        },
+        {
+          "id": "SpanishAbuela",
+          "name": "Abuela",
+          "group": "Spanish",
+          "detail": "",
+          "lang": "es"
+        },
+        {
+          "id": "SpanishBreakupSad",
+          "name": "Breakup Sad",
+          "group": "Spanish",
+          "detail": "",
+          "lang": "es"
+        },
+        {
+          "id": "SpanishNews",
+          "name": "News",
+          "group": "Spanish",
+          "detail": "",
+          "lang": "es"
+        },
+        {
+          "id": "SpanishTango",
+          "name": "Tango",
+          "group": "Spanish",
+          "detail": "",
+          "lang": "es"
+        },
+        {
+          "id": "TurkishFisherman",
+          "name": "Fisherman",
+          "group": "Turkish",
+          "detail": "",
+          "lang": "tr"
+        },
+        {
+          "id": "TurkishGrandmaCooking",
+          "name": "Grandma Cooking",
+          "group": "Turkish",
+          "detail": "",
+          "lang": "tr"
+        },
+        {
+          "id": "TurkishNewsAnchor",
+          "name": "News Anchor",
+          "group": "Turkish",
+          "detail": "",
+          "lang": "tr"
+        }
+      ],
+      "voice_default": "Bruno",
+      "cloning": "optional",
+      "ref_text": true,
+      "note": "Start a line with an emotion such as [joyful] or [stern], drop in <laugh> or <sigh>, and stress a word with (((triple parentheses))). Cloning without a transcript downloads Whisper large (3 GB) the first time. The licence allows commercial use only under $1M in annual revenue or funding.",
+      "downloads": [
+        {
+          "repo": "KittenML/kitten-tts-2",
+          "allow": [
+            "config.json",
+            "lm/*.json",
+            "lm/merges.txt",
+            "lm/model-ternary.safetensors",
+            "speaker/*",
+            "voices/*"
+          ]
+        },
+        {
+          "repo": "ResembleAI/chatterbox-turbo",
+          "allow": [
+            "s3gen_meanflow.safetensors"
+          ]
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs these marks, written exactly so. One emotion tag at the very start, for the whole line, from: [angry] [contemplative] [excited] [joyful] [mundane] [nervous] [sad] [stern] [surprised] [tender]. Vocal events placed inline where they happen, from: <gasp> <giggle> <growl> <gulp> <laugh> <pause> <scoff> <sigh> <sob> <um>. Triple parentheses around a word or short phrase to stress it, like (((never))). Never invent other tags.",
+        "examples": [
+          "[sad] I can't believe you did that. <sigh> You (((promised))) me you would never tell anyone.",
+          "[joyful] We did it! <laugh> After three years of trying, we (((finally))) did it!",
+          "The train to Boston leaves at nine fifteen, from platform two."
+        ],
+        "tags": [
+          "[angry]",
+          "[contemplative]",
+          "[excited]",
+          "[joyful]",
+          "[mundane]",
+          "[nervous]",
+          "[sad]",
+          "[stern]",
+          "[surprised]",
+          "[tender]",
+          "<gasp>",
+          "<giggle>",
+          "<growl>",
+          "<gulp>",
+          "<laugh>",
+          "<pause>",
+          "<scoff>",
+          "<sigh>",
+          "<sob>",
+          "<um>"
+        ],
+        "scene_example": "[nervous] Did you hear that? <pause> No, listen... there it is again. <gasp> Someone's on the stairs. I am (((not))) imagining it this time."
+      }
+    },
+    {
+      "id": "ming",
+      "name": "Ming 3.0 TTS",
+      "maker": "Ant Group",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/Ming-3.0-tts-0.5B-bf16",
+      "summary": "The best-rated permissively licensed model on the open-weights listening board. 44.1 kHz, cloning, voices described in a sentence, and a catalog of built-in voices, most of them Chinese.",
+      "license": "MIT",
+      "released": "2026-09",
+      "size": "3.0 GB",
+      "languages": "English, Chinese + 5",
+      "voices": [
+        {
+          "id": "US_Emma",
+          "name": "Emma",
+          "group": "English",
+          "detail": "Female, American",
+          "lang": "en"
+        },
+        {
+          "id": "US_James",
+          "name": "James",
+          "group": "English",
+          "detail": "Male, American",
+          "lang": "en"
+        },
+        {
+          "id": "US_Stella",
+          "name": "Stella",
+          "group": "English",
+          "detail": "Female, American",
+          "lang": "en"
+        },
+        {
+          "id": "UK_Charlotte",
+          "name": "Charlotte",
+          "group": "English",
+          "detail": "Female, British",
+          "lang": "en"
+        },
+        {
+          "id": "UK_George",
+          "name": "George",
+          "group": "English",
+          "detail": "Male, British",
+          "lang": "en"
+        },
+        {
+          "id": "灵小安",
+          "name": "灵小安",
+          "group": "Chinese",
+          "detail": "Female, teenage girl · Sweet, crisp and energetic, with an approachable, cute anime-style delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语汐",
+          "name": "灵语汐",
+          "group": "Chinese",
+          "detail": "Female, teenage girl · Clear, bright and youthful, with a sunny, energetic delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小萌",
+          "name": "灵小萌",
+          "group": "Chinese",
+          "detail": "Female, young adult · Bright, crisp and brisk, with an energetic yet dependable delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小柔",
+          "name": "灵小柔",
+          "group": "Chinese",
+          "detail": "Female, young adult · Clear, sweet and articulate, with polite, patient and professional intonation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小雅",
+          "name": "灵小雅",
+          "group": "Chinese",
+          "detail": "Female, young adult · Sweet, bright and youthful, with an energetic delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "花小呗",
+          "name": "花小呗",
+          "group": "Chinese",
+          "detail": "Female, teenage girl · Crisp and sweet, with a distinctly childlike, lively delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵韵",
+          "name": "灵韵",
+          "group": "Chinese",
+          "detail": "Female, young adult · Bright and crisp, with brisk, dependable delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "妩媚妲己",
+          "name": "妩媚妲己",
+          "group": "Chinese",
+          "detail": "Female, young adult · Sweet and crisp, with light, rising intonation and an alluring delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵婉",
+          "name": "灵婉",
+          "group": "Chinese",
+          "detail": "Female, teenage girl · Clear and sweet, with a youthful, intimate and soothing delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小月",
+          "name": "灵小月",
+          "group": "Chinese",
+          "detail": "Female, young adult · Sweet, clear and energetic, with cheerful, welcoming intonation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵朵儿",
+          "name": "灵朵儿",
+          "group": "Chinese",
+          "detail": "Female, young adult · Warm, thoughtful and approachable, with an unhurried, soothing storytelling style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小锋",
+          "name": "灵小锋",
+          "group": "Chinese",
+          "detail": "Male, young adult · Warm and resonant, with natural confidence and a balance of friendliness and maturity.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小川",
+          "name": "灵小川",
+          "group": "Chinese",
+          "detail": "Male, young adult · Warm, mellow and resonant, with sensitive, expressive delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小甄",
+          "name": "灵小甄",
+          "group": "Chinese",
+          "detail": "Female, young adult · Bright, crisp and lively, with a friendly, persuasive recommendation style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小知",
+          "name": "灵小知",
+          "group": "Chinese",
+          "detail": "Female, young adult · Bright and confident, with strong, articulate and persuasive delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小惠",
+          "name": "灵小惠",
+          "group": "Chinese",
+          "detail": "Female, young adult · Very fast and penetrating, conveying urgency, enthusiasm and professional confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小晴",
+          "name": "灵小晴",
+          "group": "Chinese",
+          "detail": "Female, young adult · Very fast yet clear, with a powerful, bright delivery that conveys urgency.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小琪",
+          "name": "灵小琪",
+          "group": "Chinese",
+          "detail": "Male, young adult · Sunny, friendly and natural, with an enthusiastic recommendation style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵梦",
+          "name": "灵梦",
+          "group": "Chinese",
+          "detail": "Female, young adult · Very sweet and youthful, with playful, affectionate delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵恬",
+          "name": "灵恬",
+          "group": "Chinese",
+          "detail": "Female, young adult · Honey-sweet, with a gently playful yet assured romantic delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小汐",
+          "name": "灵小汐",
+          "group": "Chinese",
+          "detail": "Female, young adult · Clear and sweet, with relaxed, natural and endearingly innocent delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小棠",
+          "name": "灵小棠",
+          "group": "Chinese",
+          "detail": "Female, young adult · Clear and warm, with calm pacing and a gentle, experienced storytelling style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小梨",
+          "name": "灵小梨",
+          "group": "Chinese",
+          "detail": "Female, young adult · Sweet and clear, combining youthful playfulness with gentle, expressive narration.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵小芸",
+          "name": "灵小芸",
+          "group": "Chinese",
+          "detail": "Female, young adult · Warm and thoughtful, with sincere, calm and sensitive delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵空",
+          "name": "灵空",
+          "group": "Chinese",
+          "detail": "Male, young adult · Low and resonant, with close, breathy delivery that conveys affection and reassurance.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵宇",
+          "name": "灵宇",
+          "group": "Chinese",
+          "detail": "Male, young adult · Youthful and resonant, with a confident smile and gentle teasing.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵朗",
+          "name": "灵朗",
+          "group": "Chinese",
+          "detail": "Male, young adult · Low and resonant, combining confident warmth with affectionate reassurance.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵楷",
+          "name": "灵楷",
+          "group": "Chinese",
+          "detail": "Male, young adult · Warm and resonant, with slow, soothing late-night-radio narration.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵旭",
+          "name": "灵旭",
+          "group": "Chinese",
+          "detail": "Male, young adult · Clear, youthful and scholarly, with calm, gentle storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵江",
+          "name": "灵江",
+          "group": "Chinese",
+          "detail": "Male, young adult · Warm and resonant, with relaxed, heartfelt reflections on youth and enthusiasm.",
+          "lang": "zh"
+        },
+        {
+          "id": "悲伤女声",
+          "name": "悲伤女声",
+          "group": "Chinese",
+          "detail": "Female, young adult · Gentle yet determined, with a thoughtful, intimate storytelling style.",
+          "lang": "zh"
+        },
+        {
+          "id": "皮六",
+          "name": "皮六",
+          "group": "Chinese",
+          "detail": "Male, young adult · Bright, youthful and confident, with strong contrast and dramatic emphasis.",
+          "lang": "zh"
+        },
+        {
+          "id": "悟空",
+          "name": "悟空",
+          "group": "Chinese",
+          "detail": "Male, young adult · Highly expressive and theatrical, with vivid but measured exaggeration.",
+          "lang": "zh"
+        },
+        {
+          "id": "蜡笔小新_野原美伢 (美伢)",
+          "name": "蜡笔小新_野原美伢 (美伢)",
+          "group": "Chinese characters",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "小猪佩奇_佩奇",
+          "name": "小猪佩奇_佩奇",
+          "group": "Chinese characters",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "康熙王朝_康熙",
+          "name": "康熙王朝_康熙",
+          "group": "Chinese characters",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "西游记_唐僧",
+          "name": "西游记_唐僧",
+          "group": "Chinese characters",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "甄嬛传_四郎",
+          "name": "甄嬛传_四郎",
+          "group": "Chinese characters",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "水浒传_武松",
+          "name": "水浒传_武松",
+          "group": "Chinese characters",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "水浒传_潘金莲",
+          "name": "水浒传_潘金莲",
+          "group": "Chinese characters",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "雍正王朝_雍正",
+          "name": "雍正王朝_雍正",
+          "group": "Chinese characters",
+          "detail": "",
+          "lang": "zh"
+        },
+        {
+          "id": "灵晓声_惊讶",
+          "name": "灵晓声 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and resonant, with calm confidence and an assertive, charismatic delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵晓声_厌恶",
+          "name": "灵晓声 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and resonant, with calm confidence and an assertive, charismatic delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵晓声_高兴",
+          "name": "灵晓声 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and resonant, with calm confidence and an assertive, charismatic delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵晓声_中性",
+          "name": "灵晓声 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and resonant, with calm confidence and an assertive, charismatic delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵晓声_悲伤",
+          "name": "灵晓声 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and resonant, with calm confidence and an assertive, charismatic delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵风信_生气",
+          "name": "灵风信 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and clear, with warm, concerned and reassuring delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵风信_中性",
+          "name": "灵风信 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and clear, with warm, concerned and reassuring delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵风信_厌恶",
+          "name": "灵风信 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and clear, with warm, concerned and reassuring delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵风信_高兴",
+          "name": "灵风信 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and clear, with warm, concerned and reassuring delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵风信_悲伤",
+          "name": "灵风信 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and clear, with warm, concerned and reassuring delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜梦_中性",
+          "name": "灵惜梦 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, combining approachable warmth with independence and decisiveness.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜梦_厌恶",
+          "name": "灵惜梦 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, combining approachable warmth with independence and decisiveness.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜梦_高兴",
+          "name": "灵惜梦 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, combining approachable warmth with independence and decisiveness.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜梦_悲伤",
+          "name": "灵惜梦 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, combining approachable warmth with independence and decisiveness.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜梦_恐惧",
+          "name": "灵惜梦 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, combining approachable warmth with independence and decisiveness.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜梦_惊讶",
+          "name": "灵惜梦 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, combining approachable warmth with independence and decisiveness.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜梦_生气",
+          "name": "灵惜梦 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, combining approachable warmth with independence and decisiveness.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵逸风_悲伤",
+          "name": "灵逸风 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Fresh and youthful, with relaxed, casual and slightly evasive delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵逸风_惊讶",
+          "name": "灵逸风 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Fresh and youthful, with relaxed, casual and slightly evasive delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵逸风_中性",
+          "name": "灵逸风 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Fresh and youthful, with relaxed, casual and slightly evasive delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵逸风_恐惧",
+          "name": "灵逸风 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Fresh and youthful, with relaxed, casual and slightly evasive delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵逸风_高兴",
+          "name": "灵逸风 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Fresh and youthful, with relaxed, casual and slightly evasive delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦澜_中性",
+          "name": "灵悦澜 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young / teenage girl · Sweet and crisp, with a smiling, approachable and lively delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦澜_高兴",
+          "name": "灵悦澜 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young / teenage girl · Sweet and crisp, with a smiling, approachable and lively delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦澜_厌恶",
+          "name": "灵悦澜 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young / teenage girl · Sweet and crisp, with a smiling, approachable and lively delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦澜_恐惧",
+          "name": "灵悦澜 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young / teenage girl · Sweet and crisp, with a smiling, approachable and lively delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦澜_生气",
+          "name": "灵悦澜 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young / teenage girl · Sweet and crisp, with a smiling, approachable and lively delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦澜_悲伤",
+          "name": "灵悦澜 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young / teenage girl · Sweet and crisp, with a smiling, approachable and lively delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵御心_高兴",
+          "name": "灵御心 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright, crisp and direct, with efficient, youthful energy.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵御心_中性",
+          "name": "灵御心 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright, crisp and direct, with efficient, youthful energy.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵御心_生气",
+          "name": "灵御心 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright, crisp and direct, with efficient, youthful energy.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语恬_高兴",
+          "name": "灵语恬 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and gentle, with attentive, earnest delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语恬_恐惧",
+          "name": "灵语恬 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and gentle, with attentive, earnest delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语恬_悲伤",
+          "name": "灵语恬 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and gentle, with attentive, earnest delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语恬_惊讶",
+          "name": "灵语恬 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and gentle, with attentive, earnest delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语恬_生气",
+          "name": "灵语恬 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and gentle, with attentive, earnest delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语恬_中性",
+          "name": "灵语恬 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and gentle, with attentive, earnest delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心恬_厌恶",
+          "name": "灵心恬 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp and composed, with objective delivery and vivid storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心恬_惊讶",
+          "name": "灵心恬 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp and composed, with objective delivery and vivid storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心恬_悲伤",
+          "name": "灵心恬 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp and composed, with objective delivery and vivid storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心恬_中性",
+          "name": "灵心恬 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp and composed, with objective delivery and vivid storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心恬_恐惧",
+          "name": "灵心恬 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp and composed, with objective delivery and vivid storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心恬_高兴",
+          "name": "灵心恬 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp and composed, with objective delivery and vivid storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心恬_生气",
+          "name": "灵心恬 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp and composed, with objective delivery and vivid storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵亦尘_中性",
+          "name": "灵亦尘 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with natural, gentle concern and reassuring delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵亦尘_恐惧",
+          "name": "灵亦尘 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with natural, gentle concern and reassuring delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语尘_高兴",
+          "name": "灵语尘 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Low, husky and world-weary, conveying helplessness and resignation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语尘_厌恶",
+          "name": "灵语尘 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Low, husky and world-weary, conveying helplessness and resignation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语尘_惊讶",
+          "name": "灵语尘 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Low, husky and world-weary, conveying helplessness and resignation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语尘_中性",
+          "name": "灵语尘 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Low, husky and world-weary, conveying helplessness and resignation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语尘_悲伤",
+          "name": "灵语尘 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Low, husky and world-weary, conveying helplessness and resignation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语尘_恐惧",
+          "name": "灵语尘 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Low, husky and world-weary, conveying helplessness and resignation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦兮_高兴",
+          "name": "灵悦兮 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, with lively, confident and action-oriented delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦兮_中性",
+          "name": "灵悦兮 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, with lively, confident and action-oriented delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦兮_生气",
+          "name": "灵悦兮 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, with lively, confident and action-oriented delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦兮_惊讶",
+          "name": "灵悦兮 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, with lively, confident and action-oriented delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦兮_厌恶",
+          "name": "灵悦兮 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, with lively, confident and action-oriented delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦兮_悲伤",
+          "name": "灵悦兮 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, with lively, confident and action-oriented delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵悦兮_恐惧",
+          "name": "灵悦兮 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Bright and crisp, with lively, confident and action-oriented delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵若虚_惊讶",
+          "name": "灵若虚 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged / older adult · Clean and efficient, with thoughtful, objective yet warm delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵若虚_中性",
+          "name": "灵若虚 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged / older adult · Clean and efficient, with thoughtful, objective yet warm delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵若虚_悲伤",
+          "name": "灵若虚 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged / older adult · Clean and efficient, with thoughtful, objective yet warm delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵若虚_高兴",
+          "name": "灵若虚 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged / older adult · Clean and efficient, with thoughtful, objective yet warm delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵若虚_厌恶",
+          "name": "灵若虚 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged / older adult · Clean and efficient, with thoughtful, objective yet warm delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵若虚_生气",
+          "name": "灵若虚 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged / older adult · Clean and efficient, with thoughtful, objective yet warm delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵未央_高兴",
+          "name": "灵未央 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and crisp, with playful, rising intonation and confident explanations.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵未央_中性",
+          "name": "灵未央 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and crisp, with playful, rising intonation and confident explanations.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵未央_惊讶",
+          "name": "灵未央 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and crisp, with playful, rising intonation and confident explanations.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵未央_悲伤",
+          "name": "灵未央 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and crisp, with playful, rising intonation and confident explanations.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵未央_恐惧",
+          "name": "灵未央 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and crisp, with playful, rising intonation and confident explanations.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵未央_生气",
+          "name": "灵未央 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and crisp, with playful, rising intonation and confident explanations.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵梦瑶_中性",
+          "name": "灵梦瑶 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, child · Soft and sweet, with a friendly, earnest and soothing explanatory style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵梦瑶_高兴",
+          "name": "灵梦瑶 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, child · Soft and sweet, with a friendly, earnest and soothing explanatory style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵梦瑶_悲伤",
+          "name": "灵梦瑶 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, child · Soft and sweet, with a friendly, earnest and soothing explanatory style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵梦瑶_惊讶",
+          "name": "灵梦瑶 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, child · Soft and sweet, with a friendly, earnest and soothing explanatory style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵梦瑶_生气",
+          "name": "灵梦瑶 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, child · Soft and sweet, with a friendly, earnest and soothing explanatory style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妙声_中性",
+          "name": "灵妙声 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Male, adolescent · Sweet and crisp, with standard pronunciation and a fresh, approachable, professional delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妙声_悲伤",
+          "name": "灵妙声 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, adolescent · Sweet and crisp, with standard pronunciation and a fresh, approachable, professional delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵言澈_中性",
+          "name": "灵言澈 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm, resonant and reassuring, with gentle, affectionate concern.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵言澈_高兴",
+          "name": "灵言澈 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm, resonant and reassuring, with gentle, affectionate concern.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵嘉肴_中性",
+          "name": "灵嘉肴 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Bright and energetic, with precise articulation and rational, approachable confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵嘉肴_恐惧",
+          "name": "灵嘉肴 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Bright and energetic, with precise articulation and rational, approachable confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵孤影_中性",
+          "name": "灵孤影 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with composed, sincere appreciation and natural satisfaction.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵雨汐_中性",
+          "name": "灵雨汐 · Neutral",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Soft and sweet, with natural breathiness and an affectionate, relaxed youthful delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵雨汐_恐惧",
+          "name": "灵雨汐 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Soft and sweet, with natural breathiness and an affectionate, relaxed youthful delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵雨汐_高兴",
+          "name": "灵雨汐 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Soft and sweet, with natural breathiness and an affectionate, relaxed youthful delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵雨汐_悲伤",
+          "name": "灵雨汐 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Soft and sweet, with natural breathiness and an affectionate, relaxed youthful delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵雨汐_惊讶",
+          "name": "灵雨汐 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Soft and sweet, with natural breathiness and an affectionate, relaxed youthful delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵信远_生气",
+          "name": "灵信远 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and warm, with a slight smile and audible breath, balancing youthful freshness and mature affection.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵信远_惊讶",
+          "name": "灵信远 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and warm, with a slight smile and audible breath, balancing youthful freshness and mature affection.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵信远_高兴",
+          "name": "灵信远 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and warm, with a slight smile and audible breath, balancing youthful freshness and mature affection.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵信远_恐惧",
+          "name": "灵信远 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and warm, with a slight smile and audible breath, balancing youthful freshness and mature affection.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵信远_悲伤",
+          "name": "灵信远 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and warm, with a slight smile and audible breath, balancing youthful freshness and mature affection.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵思齐_高兴",
+          "name": "灵思齐 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Sunny, bright and engaging, with sincere praise and approachable warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵思齐_恐惧",
+          "name": "灵思齐 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Sunny, bright and engaging, with sincere praise and approachable warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵思齐_厌恶",
+          "name": "灵思齐 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Sunny, bright and engaging, with sincere praise and approachable warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵思齐_惊讶",
+          "name": "灵思齐 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Sunny, bright and engaging, with sincere praise and approachable warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵思齐_悲伤",
+          "name": "灵思齐 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Sunny, bright and engaging, with sincere praise and approachable warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵叙柔_高兴",
+          "name": "灵叙柔 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young to middle-aged adult · Composed and dignified, with clear articulation and a balance of authority and gentle narration.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵叙柔_惊讶",
+          "name": "灵叙柔 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young to middle-aged adult · Composed and dignified, with clear articulation and a balance of authority and gentle narration.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵绮木_厌恶",
+          "name": "灵绮木 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young to middle-aged adult · Professional yet approachable, with gentle, assured delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵绮木_高兴",
+          "name": "灵绮木 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young to middle-aged adult · Professional yet approachable, with gentle, assured delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵绮木_生气",
+          "name": "灵绮木 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young to middle-aged adult · Professional yet approachable, with gentle, assured delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵渊霆_厌恶",
+          "name": "灵渊霆 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, middle-aged adult · Youthful, natural and relaxed, like a familiar friend making a casual invitation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵渊霆_恐惧",
+          "name": "灵渊霆 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, middle-aged adult · Youthful, natural and relaxed, like a familiar friend making a casual invitation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵渊霆_惊讶",
+          "name": "灵渊霆 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, middle-aged adult · Youthful, natural and relaxed, like a familiar friend making a casual invitation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵渊霆_悲伤",
+          "name": "灵渊霆 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, middle-aged adult · Youthful, natural and relaxed, like a familiar friend making a casual invitation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵渊霆_生气",
+          "name": "灵渊霆 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Male, middle-aged adult · Youthful, natural and relaxed, like a familiar friend making a casual invitation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵渊霆_高兴",
+          "name": "灵渊霆 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, middle-aged adult · Youthful, natural and relaxed, like a familiar friend making a casual invitation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵素心_悲伤",
+          "name": "灵素心 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, teenage girl · Sweet, crisp and energetic, with lively, curious intonation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵素心_厌恶",
+          "name": "灵素心 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, teenage girl · Sweet, crisp and energetic, with lively, curious intonation.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵采薇_厌恶",
+          "name": "灵采薇 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Warm and thoughtful, with clear articulation and calm, trustworthy delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵采薇_生气",
+          "name": "灵采薇 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Warm and thoughtful, with clear articulation and calm, trustworthy delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵采薇_高兴",
+          "name": "灵采薇 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Warm and thoughtful, with clear articulation and calm, trustworthy delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵卓然_恐惧",
+          "name": "灵卓然 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young or middle-aged adult · Full and resonant, with precise pronunciation and calm, objective delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵卓然_悲伤",
+          "name": "灵卓然 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young or middle-aged adult · Full and resonant, with precise pronunciation and calm, objective delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵浅忧_高兴",
+          "name": "灵浅忧 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male (boy), child / adolescent · Bright and crisp, with precise articulation and professional, objective confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵浅忧_厌恶",
+          "name": "灵浅忧 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male (boy), child / adolescent · Bright and crisp, with precise articulation and professional, objective confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵浅忧_悲伤",
+          "name": "灵浅忧 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male (boy), child / adolescent · Bright and crisp, with precise articulation and professional, objective confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵浅忧_恐惧",
+          "name": "灵浅忧 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male (boy), child / adolescent · Bright and crisp, with precise articulation and professional, objective confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵昭野_高兴",
+          "name": "灵昭野 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and youthful, with sincere admiration and a warm, captivated delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵昭野_悲伤",
+          "name": "灵昭野 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and youthful, with sincere admiration and a warm, captivated delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵昭野_厌恶",
+          "name": "灵昭野 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and youthful, with sincere admiration and a warm, captivated delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心澜_高兴",
+          "name": "灵心澜 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged; mature and composed · Mature and composed, with assured, discerning and dignified delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵心澜_悲伤",
+          "name": "灵心澜 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged; mature and composed · Mature and composed, with assured, discerning and dignified delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵犀言_悲伤",
+          "name": "灵犀言 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, middle-aged / older adult · Deep and full, with mature composure, firm articulation and an authoritative delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵犀言_生气",
+          "name": "灵犀言 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Male, middle-aged / older adult · Deep and full, with mature composure, firm articulation and an authoritative delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语冰_悲伤",
+          "name": "灵语冰 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Thoughtful and efficient, with precise articulation and objective, trustworthy delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语冰_高兴",
+          "name": "灵语冰 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Thoughtful and efficient, with precise articulation and objective, trustworthy delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语冰_惊讶",
+          "name": "灵语冰 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Thoughtful and efficient, with precise articulation and objective, trustworthy delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惊鸿_厌恶",
+          "name": "灵惊鸿 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Brisk and direct, with natural, easygoing business confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惊鸿_高兴",
+          "name": "灵惊鸿 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Brisk and direct, with natural, easygoing business confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惊鸿_惊讶",
+          "name": "灵惊鸿 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Brisk and direct, with natural, easygoing business confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惊鸿_生气",
+          "name": "灵惊鸿 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Brisk and direct, with natural, easygoing business confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惊鸿_悲伤",
+          "name": "灵惊鸿 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Brisk and direct, with natural, easygoing business confidence.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜蕊_惊讶",
+          "name": "灵惜蕊 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and pleasant, with standard pronunciation and patient, professional warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜蕊_厌恶",
+          "name": "灵惜蕊 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and pleasant, with standard pronunciation and patient, professional warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜蕊_恐惧",
+          "name": "灵惜蕊 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and pleasant, with standard pronunciation and patient, professional warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜蕊_高兴",
+          "name": "灵惜蕊 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and pleasant, with standard pronunciation and patient, professional warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜蕊_悲伤",
+          "name": "灵惜蕊 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and pleasant, with standard pronunciation and patient, professional warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惜蕊_生气",
+          "name": "灵惜蕊 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and pleasant, with standard pronunciation and patient, professional warmth.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语萱_厌恶",
+          "name": "灵语萱 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and sweet, with gentle yet firm affection, trust and reassurance.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语萱_高兴",
+          "name": "灵语萱 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and sweet, with gentle yet firm affection, trust and reassurance.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语萱_恐惧",
+          "name": "灵语萱 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and sweet, with gentle yet firm affection, trust and reassurance.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语萱_生气",
+          "name": "灵语萱 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and sweet, with gentle yet firm affection, trust and reassurance.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语萱_悲伤",
+          "name": "灵语萱 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Clear and sweet, with gentle yet firm affection, trust and reassurance.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语烟_生气",
+          "name": "灵语烟 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, teenage girl / young adult · Bright, crisp and lively, expressing surprise and everyday banter.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语烟_恐惧",
+          "name": "灵语烟 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, teenage girl / young adult · Bright, crisp and lively, expressing surprise and everyday banter.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语烟_厌恶",
+          "name": "灵语烟 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, teenage girl / young adult · Bright, crisp and lively, expressing surprise and everyday banter.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语烟_高兴",
+          "name": "灵语烟 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, teenage girl / young adult · Bright, crisp and lively, expressing surprise and everyday banter.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵语烟_悲伤",
+          "name": "灵语烟 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, teenage girl / young adult · Bright, crisp and lively, expressing surprise and everyday banter.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵律雅_恐惧",
+          "name": "灵律雅 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged adult · Efficient and grounded in urban life, with restrained, authentic frustration.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵律雅_生气",
+          "name": "灵律雅 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged adult · Efficient and grounded in urban life, with restrained, authentic frustration.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵律雅_高兴",
+          "name": "灵律雅 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged adult · Efficient and grounded in urban life, with restrained, authentic frustration.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵惊涛_恐惧",
+          "name": "灵惊涛 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Young male delivery with a distinctive Nanning accent, conveying humorous frustration at an overly cold internet cafe.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵寒陌_厌恶",
+          "name": "灵寒陌 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and youthful, with urgent, innocent attempts to clear up a misunderstanding.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵寒陌_高兴",
+          "name": "灵寒陌 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Clear and youthful, with urgent, innocent attempts to clear up a misunderstanding.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵决冥_厌恶",
+          "name": "灵决冥 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Resonant and precise, with calm, objective and engaging documentary-style delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵决冥_生气",
+          "name": "灵决冥 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Resonant and precise, with calm, objective and engaging documentary-style delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵决冥_恐惧",
+          "name": "灵决冥 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Resonant and precise, with calm, objective and engaging documentary-style delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵慈萱_生气",
+          "name": "灵慈萱 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp, youthful and natural, with a familiar, slightly urgent delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵慈萱_悲伤",
+          "name": "灵慈萱 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp, youthful and natural, with a familiar, slightly urgent delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵慈萱_恐惧",
+          "name": "灵慈萱 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Crisp, youthful and natural, with a familiar, slightly urgent delivery.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妙音_悲伤",
+          "name": "灵妙音 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Resonant and forceful, with efficient delivery and an unquestionable sense of authority.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妙音_惊讶",
+          "name": "灵妙音 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Resonant and forceful, with efficient delivery and an unquestionable sense of authority.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妙音_厌恶",
+          "name": "灵妙音 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Resonant and forceful, with efficient delivery and an unquestionable sense of authority.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妙音_高兴",
+          "name": "灵妙音 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Resonant and forceful, with efficient delivery and an unquestionable sense of authority.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妙音_恐惧",
+          "name": "灵妙音 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Resonant and forceful, with efficient delivery and an unquestionable sense of authority.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵断尘_悲伤",
+          "name": "灵断尘 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and conversational, with light questions and decisive refusals.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵断尘_高兴",
+          "name": "灵断尘 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and conversational, with light questions and decisive refusals.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵断尘_惊讶",
+          "name": "灵断尘 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and conversational, with light questions and decisive refusals.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵断尘_恐惧",
+          "name": "灵断尘 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and conversational, with light questions and decisive refusals.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵断尘_厌恶",
+          "name": "灵断尘 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Youthful and conversational, with light questions and decisive refusals.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵熙婉_高兴",
+          "name": "灵熙婉 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged adult · Sweet and clear, with a smiling, approachable and lively storytelling style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵熙婉_恐惧",
+          "name": "灵熙婉 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged adult · Sweet and clear, with a smiling, approachable and lively storytelling style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵熙婉_悲伤",
+          "name": "灵熙婉 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, middle-aged adult · Sweet and clear, with a smiling, approachable and lively storytelling style.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵旭扬_生气",
+          "name": "灵旭扬 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with affectionate delivery and a hint of illness-related weakness and desire for attention.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵旭扬_恐惧",
+          "name": "灵旭扬 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with affectionate delivery and a hint of illness-related weakness and desire for attention.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵旭扬_高兴",
+          "name": "灵旭扬 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with affectionate delivery and a hint of illness-related weakness and desire for attention.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵旭扬_惊讶",
+          "name": "灵旭扬 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with affectionate delivery and a hint of illness-related weakness and desire for attention.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵旭扬_悲伤",
+          "name": "灵旭扬 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with affectionate delivery and a hint of illness-related weakness and desire for attention.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵旭扬_厌恶",
+          "name": "灵旭扬 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Warm and resonant, with affectionate delivery and a hint of illness-related weakness and desire for attention.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵阅川_生气",
+          "name": "灵阅川 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Deep and resonant, with experienced, composed and dignified storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵阅川_悲伤",
+          "name": "灵阅川 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Deep and resonant, with experienced, composed and dignified storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵阅川_高兴",
+          "name": "灵阅川 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Deep and resonant, with experienced, composed and dignified storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵阅川_厌恶",
+          "name": "灵阅川 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Deep and resonant, with experienced, composed and dignified storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵阅川_恐惧",
+          "name": "灵阅川 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Male, young adult · Deep and resonant, with experienced, composed and dignified storytelling.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妩月_厌恶",
+          "name": "灵妩月 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Gentle and thoughtful, combining caring, rational advice with quiet strength.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妩月_生气",
+          "name": "灵妩月 · Angry",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Gentle and thoughtful, combining caring, rational advice with quiet strength.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妩月_惊讶",
+          "name": "灵妩月 · Surprised",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Gentle and thoughtful, combining caring, rational advice with quiet strength.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妩月_恐惧",
+          "name": "灵妩月 · Fearful",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Gentle and thoughtful, combining caring, rational advice with quiet strength.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妩月_高兴",
+          "name": "灵妩月 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Gentle and thoughtful, combining caring, rational advice with quiet strength.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵妩月_悲伤",
+          "name": "灵妩月 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Gentle and thoughtful, combining caring, rational advice with quiet strength.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵汐月_悲伤",
+          "name": "灵汐月 · Sad",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and soothing, with relaxed, heartfelt delivery conveying intimacy and trust.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵汐月_高兴",
+          "name": "灵汐月 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Sweet and soothing, with relaxed, heartfelt delivery conveying intimacy and trust.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵黛嗔_厌恶",
+          "name": "灵黛嗔 · Disgusted",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Warm, thoughtful and engaging, with sincere, confident recommendations.",
+          "lang": "zh"
+        },
+        {
+          "id": "灵黛嗔_高兴",
+          "name": "灵黛嗔 · Happy",
+          "group": "Chinese with emotion",
+          "detail": "Female, young adult · Warm, thoughtful and engaging, with sincere, confident recommendations.",
+          "lang": "zh"
+        }
+      ],
+      "voice_default": "US_Emma",
+      "cloning": "optional",
+      "ref_text": true,
+      "instruct": "optional",
+      "instruct_hint": "Describe the delivery instead of picking a voice: a warm, unhurried storyteller",
+      "note": "Write numbers out as words; it doesn't expand them. Tags like [Sigh], [Laughter] and [Cough] work inline.",
+      "options": {
+        "ref_text": true,
+        "instruct": true,
+        "instruct_replaces_voice": true,
+        "instruct_gen": {
+          "use_zero_spk_emb": true
+        }
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/Ming-3.0-tts-0.5B-bf16"
+        },
+        {
+          "repo": "mlx-community/whisper-large-v3-turbo-asr-fp16"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs these tags, written exactly so and placed inline where they happen: [Breathing] [Cough] [Sigh] [Laughter] [Surprise-ah] [Surprise-oh] [Dissatisfaction-hnn] [Uhm] [Confirmation-en] [Question-ei] [Question-ah] [Question-en] [Question-oh] [Question-huh]. Never invent other tags.",
+        "examples": [
+          "[Sigh] I can't believe you did that. You promised me... you would never tell anyone.",
+          "[Laughter] We did it! After three years of trying, [Breathing] we finally did it!",
+          "The train to Boston leaves at nine fifteen, from platform two."
+        ],
+        "tags": [
+          "[Breathing]",
+          "[Cough]",
+          "[Sigh]",
+          "[Laughter]",
+          "[Surprise-ah]",
+          "[Surprise-oh]",
+          "[Dissatisfaction-hnn]",
+          "[Uhm]",
+          "[Confirmation-en]",
+          "[Question-ei]",
+          "[Question-ah]",
+          "[Question-en]",
+          "[Question-oh]",
+          "[Question-huh]"
+        ],
+        "scene_example": "Did you hear that? [Breathing] No, listen... there it is again. [Surprise-ah] Someone's on the stairs. I am not imagining it this time."
+      }
+    },
+    {
+      "id": "drama3",
+      "name": "Fish Drama 3",
+      "maker": "Fish Audio",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/fish-audio-drama-3-4bit",
+      "summary": "The highest-rated open-weights model on the listening board. It acts a line rather than reading it, and clones from a sample. This is the 4-bit build: on this Mac about 40% faster than the 8-bit one, with 18 GB less in memory and the same accuracy in testing.",
+      "license": "Fish Audio Community",
+      "released": "2026-10",
+      "caution": "Revenue-capped licence",
+      "size": "23.8 GB",
+      "languages": "80+ languages",
+      "cloning": "optional",
+      "ref_text": true,
+      "note": "Delivery cues go inline in square brackets: [whispers], [laughs], [sighs]. A take that falls silent or stops early is worth running again. The licence covers research and personal use, and commercial use only below a revenue threshold.",
+      "options": {
+        "ref_text": true
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/fish-audio-drama-3-4bit"
+        },
+        {
+          "repo": "mlx-community/whisper-large-v3-turbo-asr-fp16"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs delivery cues written in square brackets, placed inline exactly where they happen, such as [sighs], [laughs], [whispers], [shouting], [clears throat], [pause], [voice breaking]. A cue is one to three plain words describing a sound or a way of speaking.",
+        "examples": [
+          "[voice breaking] I can't believe you did that. [sighs] You promised me... you would never tell anyone.",
+          "[laughs] We did it! After three years of trying... [breathless] we finally did it!",
+          "The train to Boston leaves at nine fifteen, from platform two."
+        ],
+        "speakers": 4,
+        "scene_example": "<|speaker:0|> [whispers] Did you hear that?\n<|speaker:1|> Hear what? [sighs] It's two in the morning, go back to sleep.\n<|speaker:0|> No, listen... there it is again. Someone's on the stairs.\n<|speaker:1|> [pause] ...Okay. I heard it that time."
+      }
+    },
+    {
+      "id": "drama3-8bit",
+      "name": "Fish Drama 3 (8-bit)",
+      "maker": "Fish Audio",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/fish-audio-drama-3-8bit",
+      "summary": "The same model with its experts at 8 bits, closer to the released weights. Slower and much heavier than the 4-bit build, and here to compare against it: if you hear no difference, remove this one.",
+      "license": "Fish Audio Community",
+      "released": "2026-10",
+      "caution": "Revenue-capped licence",
+      "size": "42.2 GB",
+      "languages": "80+ languages",
+      "cloning": "optional",
+      "ref_text": true,
+      "note": "Delivery cues go inline in square brackets: [whispers], [laughs], [sighs]. A take that falls silent or stops early is worth running again. The licence covers research and personal use, and commercial use only below a revenue threshold.",
+      "options": {
+        "ref_text": true
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/fish-audio-drama-3-8bit"
+        },
+        {
+          "repo": "mlx-community/whisper-large-v3-turbo-asr-fp16"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs delivery cues written in square brackets, placed inline exactly where they happen, such as [sighs], [laughs], [whispers], [shouting], [clears throat], [pause], [voice breaking]. A cue is one to three plain words describing a sound or a way of speaking.",
+        "examples": [
+          "[voice breaking] I can't believe you did that. [sighs] You promised me... you would never tell anyone.",
+          "[laughs] We did it! After three years of trying... [breathless] we finally did it!",
+          "The train to Boston leaves at nine fifteen, from platform two."
+        ],
+        "speakers": 4,
+        "scene_example": "<|speaker:0|> [whispers] Did you hear that?\n<|speaker:1|> Hear what? [sighs] It's two in the morning, go back to sleep.\n<|speaker:0|> No, listen... there it is again. Someone's on the stairs.\n<|speaker:1|> [pause] ...Okay. I heard it that time."
+      }
+    },
+    {
+      "id": "breeze",
+      "name": "Breeze TTS 2",
+      "maker": "BreezeBlue",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/Breeze-TTS-2-mlx",
+      "summary": "Second on the open-weights listening board. Designs a voice from a description, clones one from a sample, or does both: your sample's voice, directed in words.",
+      "license": "BreezeBlue Research",
+      "released": "2026-08",
+      "caution": "Non-commercial",
+      "size": "7.6 GB",
+      "languages": "English, Chinese",
+      "cloning": "optional",
+      "ref_text": true,
+      "instruct": "optional",
+      "instruct_hint": "Describe the voice or the delivery: a warm, thoughtful young woman with a clear voice",
+      "note": "Vocal events go inline in parentheses: (sigh), (laugh), (clears throat). The weights are for research and non-commercial use only.",
+      "options": {
+        "ref_text": true,
+        "instruct": true,
+        "gen": {
+          "cfg_scale": 4.0
+        }
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/Breeze-TTS-2-mlx"
+        },
+        {
+          "repo": "mlx-community/whisper-large-v3-turbo-asr-fp16"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs vocal events written in parentheses, placed inline exactly where they happen, such as (sigh), (laugh), (cough), (clears throat), (gasp). For Chinese text they go in square brackets instead, such as [笑] and [叹气].",
+        "direction": "voice",
+        "examples": [
+          "(sigh) I can't believe you did that. You promised me... you would never tell anyone.",
+          "(laugh) We did it! After three years of trying... (gasp) we finally did it!",
+          "The train to Boston leaves at nine fifteen, from platform two."
+        ],
+        "scene_example": "Did you hear that? (gasp) No, listen... there it is again. Someone's on the stairs. I am not imagining it this time."
+      }
+    },
+    {
+      "id": "qwen3-voices",
+      "name": "Qwen3-TTS Voices",
+      "maker": "Alibaba",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16",
+      "summary": "The 1.7B CustomVoice model: nine preset speakers that take direction. Say how the line should be delivered and it acts it.",
+      "license": "Apache-2.0",
+      "released": "2026-01",
+      "size": "4.5 GB",
+      "languages": "10 languages",
+      "voices": [
+        {
+          "id": "Ryan",
+          "name": "Ryan",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "Aiden",
+          "name": "Aiden",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "Vivian",
+          "name": "Vivian",
+          "group": "Chinese",
+          "detail": "Female",
+          "lang": "zh"
+        },
+        {
+          "id": "Serena",
+          "name": "Serena",
+          "group": "Chinese",
+          "detail": "Female",
+          "lang": "zh"
+        },
+        {
+          "id": "Uncle_Fu",
+          "name": "Uncle Fu",
+          "group": "Chinese",
+          "detail": "Male",
+          "lang": "zh"
+        },
+        {
+          "id": "Dylan",
+          "name": "Dylan",
+          "group": "Chinese",
+          "detail": "Male, Beijing dialect",
+          "lang": "zh"
+        },
+        {
+          "id": "Eric",
+          "name": "Eric",
+          "group": "Chinese",
+          "detail": "Male, Sichuan dialect",
+          "lang": "zh"
+        },
+        {
+          "id": "Ono_Anna",
+          "name": "Ono Anna",
+          "group": "Japanese",
+          "detail": "Female",
+          "lang": "ja"
+        },
+        {
+          "id": "Sohee",
+          "name": "Sohee",
+          "group": "Korean",
+          "detail": "Female",
+          "lang": "ko"
+        }
+      ],
+      "voice_default": "Ryan",
+      "instruct": "optional",
+      "instruct_hint": "How to deliver it: quietly furious, barely holding it together",
+      "options": {
+        "method": "generate_custom_voice",
+        "voice_arg": "speaker",
+        "instruct": true,
+        "gen": {
+          "language": "auto"
+        }
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/Qwen3-TTS-12Hz-1.7B-CustomVoice-bf16"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone.",
+        "direction": "delivery"
+      }
+    },
+    {
+      "id": "qwen3-clone",
+      "name": "Qwen3-TTS Clone",
+      "maker": "Alibaba",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/Qwen3-TTS-12Hz-1.7B-Base-bf16",
+      "summary": "The 1.7B Base model: speaks in the voice of a sample you give it. It has no voices of its own.",
+      "license": "Apache-2.0",
+      "released": "2026-01",
+      "size": "4.5 GB",
+      "languages": "10 languages",
+      "cloning": "required",
+      "ref_text": true,
+      "options": {
+        "ref_text": true
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/Qwen3-TTS-12Hz-1.7B-Base-bf16"
+        },
+        {
+          "repo": "mlx-community/whisper-large-v3-turbo-asr-fp16"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone."
+      }
+    },
+    {
+      "id": "qwen3-design",
+      "name": "Qwen3-TTS Design",
+      "maker": "Alibaba",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-bf16",
+      "summary": "The 1.7B VoiceDesign model: invents a voice from a description. No samples and no presets, only words.",
+      "license": "Apache-2.0",
+      "released": "2026-01",
+      "size": "4.5 GB",
+      "languages": "10 languages",
+      "instruct": "required",
+      "instruct_hint": "Describe the voice: a gravelly old sea captain, slow and amused",
+      "options": {
+        "method": "generate_voice_design",
+        "instruct": true,
+        "gen": {
+          "language": "auto"
+        }
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-bf16"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone.",
+        "direction": "voice"
+      }
+    },
+    {
+      "id": "chatterbox",
+      "name": "Chatterbox Multilingual",
+      "maker": "Resemble AI",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/chatterbox-multilingual-v3",
+      "summary": "Zero-shot cloning in 23 languages from a few seconds of audio. This MLX build has no voice of its own, so it always needs a sample.",
+      "license": "MIT",
+      "released": "2026-06",
+      "size": "3.2 GB",
+      "languages": "23 languages",
+      "cloning": "required",
+      "note": "Resemble marked Chatterbox retired research in August 2026: it works, but it won't get fixes.",
+      "options": {
+        "gen": {
+          "lang_code": "en"
+        }
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/chatterbox-multilingual-v3"
+        },
+        {
+          "repo": "mlx-community/S3TokenizerV2"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone."
+      }
+    },
+    {
+      "id": "voxcpm2",
+      "name": "VoxCPM2",
+      "maker": "OpenBMB",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_tts",
+      "repo": "mlx-community/VoxCPM2-bf16",
+      "summary": "A 2B tokenizer-free model with 48 kHz output. Clones from a sample without a transcript, or designs a voice from a description.",
+      "license": "Apache-2.0",
+      "released": "2026-04",
+      "size": "5.0 GB",
+      "languages": "30 languages",
+      "cloning": "optional",
+      "instruct": "optional",
+      "instruct_hint": "Describe the voice: a young woman, warm and gentle",
+      "options": {
+        "instruct": true
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/VoxCPM2-bf16"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone.",
+        "direction": "voice"
+      }
+    },
+    {
+      "id": "lfm3-tts",
+      "name": "LFM3 Audio TTS",
+      "maker": "Liquid AI",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "mlx_sts",
+      "repo": "LiquidAI/LFM3-Audio-2B-MLX-8bit",
+      "summary": "The speaking half of Liquid's 2B audio model, used on its own: one female and one male voice, and quick. The same weights as LFM3 Audio under Conversation.",
+      "license": "LFM Open License 1.0",
+      "released": "2026-09",
+      "caution": "Revenue-capped licence",
+      "size": "2.5 GB",
+      "languages": "English",
+      "voices": [
+        {
+          "id": "female",
+          "name": "Female",
+          "group": "English",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "male",
+          "name": "Male",
+          "group": "English",
+          "detail": "",
+          "lang": "en"
+        }
+      ],
+      "voice_default": "female",
+      "note": "The licence allows commercial use only for organisations under $10M in annual revenue.",
+      "options": {
+        "gen": {
+          "task": "tts",
+          "language": "American English"
+        }
+      },
+      "downloads": [
+        {
+          "repo": "LiquidAI/LFM3-Audio-2B-MLX-8bit"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone."
+      }
+    },
+    {
+      "id": "sophon-voice",
+      "name": "Sophon Flash voice",
+      "maker": "Adventists.ai",
+      "kind": "tts",
+      "env": "mlx",
+      "adapter": "sophon_talker",
+      "repo": "adventists-ai/Sophon-Realtime-32B-Flash",
+      "summary": "The speaking half of Sophon-Realtime-32B-Flash on its own: a Qwen3-TTS model tuned to perform sound tags, with the model's own two voices. The whole model, which listens and answers, is under Conversation.",
+      "license": "Apache-2.0",
+      "released": "2026-11",
+      "size": "4.5 GB",
+      "languages": "English, Chinese",
+      "voices": [
+        {
+          "id": "chelsie_en",
+          "name": "Chelsie",
+          "group": "English",
+          "detail": "The model's default voice",
+          "lang": "en"
+        },
+        {
+          "id": "brand_en",
+          "name": "Brand",
+          "group": "English",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "chelsie_zh",
+          "name": "Chelsie",
+          "group": "Chinese",
+          "detail": "The model's default voice",
+          "lang": "zh"
+        },
+        {
+          "id": "brand_zh",
+          "name": "Brand",
+          "group": "Chinese",
+          "detail": "",
+          "lang": "zh"
+        }
+      ],
+      "voice_default": "chelsie_en",
+      "cloning": "optional",
+      "note": "Sound tags are performed, never read aloud: [laughter], [cough], [sigh], [breath], and <laughter>words</laughter> to laugh while speaking. <strong>words</strong> for emphasis is still weak in this build.",
+      "enhance": {
+        "markup": "This model performs these sound tags, written exactly so and placed inline where they happen: [laughter] [cough] [sigh] [breath]. Words wrapped as <laughter>like this</laughter> are spoken while laughing, and <strong>like this</strong> are stressed. Never invent other tags.",
+        "tags": [
+          "[laughter]",
+          "[cough]",
+          "[sigh]",
+          "[breath]",
+          "<laughter>",
+          "</laughter>",
+          "<strong>",
+          "</strong>"
+        ],
+        "examples": [
+          "[sigh] I can't believe you did that. You promised me... you would never tell anyone.",
+          "[laughter] We did it! After three years of trying, <laughter>we finally did it!</laughter>",
+          "The train to Boston leaves at nine fifteen, from platform two."
+        ],
+        "scene_example": "Did you hear that? [breath] No, listen... there it is again. Someone's on the stairs. [sigh] I am not imagining it this time."
+      },
+      "downloads": [
+        {
+          "repo": "adventists-ai/Sophon-Realtime-32B-Flash",
+          "allow": [
+            "config.json",
+            "NOTICE",
+            "LICENSE",
+            "talker/*",
+            "talker/speech_tokenizer/*",
+            "voices/*"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seed-vc",
+      "name": "Seed-VC",
+      "maker": "Plachtaa",
+      "kind": "vc",
+      "env": "seedvc",
+      "adapter": "seed_vc",
+      "summary": "Diffusion-based zero-shot conversion, and still the strongest open option for keeping a performance while changing who gives it. 22 kHz.",
+      "license": "GPL-3.0",
+      "released": "2024-09",
+      "caution": "Copyleft",
+      "size": "4.5 GB",
+      "languages": "Any language",
+      "cloning": "required",
+      "note": "The project was archived in April 2025. It runs here on PyTorch's Metal backend with a pinned, older set of libraries.",
+      "options": {
+        "steps": 25
+      }
+    },
+    {
+      "id": "chatterbox-vc",
+      "name": "Chatterbox VC",
+      "maker": "Resemble AI",
+      "kind": "vc",
+      "env": "chatterbox",
+      "adapter": "chatterbox_vc",
+      "summary": "The conversion half of Chatterbox: re-voices a recording from a few seconds of the target. 24 kHz, permissive licence.",
+      "license": "MIT",
+      "released": "2025-04",
+      "size": "1.1 GB",
+      "languages": "Any language",
+      "cloning": "required",
+      "note": "Every output carries Resemble's inaudible PerTh watermark.",
+      "downloads": [
+        {
+          "repo": "ResembleAI/chatterbox",
+          "allow": [
+            "s3gen.safetensors",
+            "conds.pt"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "openvoice",
+      "name": "OpenVoice v2",
+      "maker": "MyShell",
+      "kind": "vc",
+      "env": "coqui",
+      "adapter": "coqui_vc",
+      "summary": "A tiny tone-colour converter that runs dozens of times faster than real time. It moves the timbre and leaves the accent and delivery alone.",
+      "license": "MIT",
+      "released": "2024-04",
+      "size": "0.3 GB",
+      "languages": "Any language",
+      "cloning": "required",
+      "options": {
+        "model": "voice_conversion_models/multilingual/multi-dataset/openvoice_v2"
+      },
+      "files": [
+        "~/Library/Application Support/tts/voice_conversion_models--multilingual--multi-dataset--openvoice_v2"
+      ]
+    },
+    {
+      "id": "sophon",
+      "name": "Sophon Realtime 32B Flash",
+      "maker": "Adventists.ai",
+      "kind": "chat",
+      "env": "mlx",
+      "adapter": "sophon",
+      "repo": "adventists-ai/Sophon-Realtime-32B-Flash",
+      "summary": "A 32B model that hears speech directly, tone included, and answers in its own voice with laughs and sighs where they fit. Published for NVIDIA servers; this is a port to MLX made for this app, one turn at a time.",
+      "license": "Apache-2.0",
+      "released": "2026-11",
+      "size": "22.6 GB",
+      "languages": "English, Chinese",
+      "voices": [
+        {
+          "id": "chelsie_en",
+          "name": "Chelsie",
+          "group": "English",
+          "detail": "The model's default voice",
+          "lang": "en"
+        },
+        {
+          "id": "brand_en",
+          "name": "Brand",
+          "group": "English",
+          "detail": "",
+          "lang": "en"
+        },
+        {
+          "id": "chelsie_zh",
+          "name": "Chelsie",
+          "group": "Chinese",
+          "detail": "The model's default voice",
+          "lang": "zh"
+        },
+        {
+          "id": "brand_zh",
+          "name": "Brand",
+          "group": "Chinese",
+          "detail": "",
+          "lang": "zh"
+        }
+      ],
+      "voice_default": "chelsie_en",
+      "note": "Installing fetches the 33 GB language model as published, converts it to a 4-bit MLX build (18 GB) and deletes the original. A recording goes in and one reply comes out: the live session of the original (interrupting, listening while it speaks), tool calling and the camera are not part of the port. A voice ending in Chinese answers in Chinese.",
+      "options": {
+        "converted": "sophon-thinker-4bit",
+        "bits": 4
+      },
+      "downloads": [
+        {
+          "repo": "adventists-ai/Sophon-Realtime-32B-Flash",
+          "allow": [
+            "config.json",
+            "NOTICE",
+            "LICENSE",
+            "talker/*",
+            "talker/speech_tokenizer/*",
+            "voices/*",
+            "thinker/*.json",
+            "thinker/*.jinja",
+            "thinker/*.txt",
+            "thinker/audio/*"
+          ]
+        }
+      ],
+      "files": [
+        "{data}/models/sophon-thinker-4bit"
+      ]
+    },
+    {
+      "id": "voicechat",
+      "name": "Nemotron VoiceChat",
+      "maker": "NVIDIA",
+      "kind": "chat",
+      "env": "mlx",
+      "adapter": "mlx_sts",
+      "repo": "mlx-community/NemotronLabs-VoiceChat-11B-8bit",
+      "summary": "An 11B full-duplex speech model: it hears your recording and answers out loud, with no separate transcription or TTS step. English, one voice.",
+      "license": "OpenMDW-1.1",
+      "released": "2026-07",
+      "size": "13.9 GB",
+      "languages": "English",
+      "downloads": [
+        {
+          "repo": "mlx-community/NemotronLabs-VoiceChat-11B-8bit"
+        }
+      ],
+      "options": {
+        "gen": {
+          "extra_decoding_seconds": 20.0,
+          "use_language_cache": true
+        },
+        "trim": true
+      },
+      "note": "It answers on the same clock as the recording, so each run decodes 20 seconds past the end of your clip to give it room to finish."
+    },
+    {
+      "id": "lfm3-audio",
+      "name": "LFM3 Audio",
+      "maker": "Liquid AI",
+      "kind": "chat",
+      "env": "mlx",
+      "adapter": "mlx_sts",
+      "repo": "LiquidAI/LFM3-Audio-2B-MLX-8bit",
+      "summary": "A 2B turn-based audio model: a spoken question in, a spoken answer and its text out. Small and quick.",
+      "license": "LFM Open License 1.0",
+      "released": "2026-09",
+      "caution": "Revenue-capped licence",
+      "size": "2.5 GB",
+      "languages": "English",
+      "note": "The licence allows commercial use only for organisations under $10M in annual revenue.",
+      "options": {
+        "gen": {
+          "task": "sts"
+        }
+      },
+      "downloads": [
+        {
+          "repo": "LiquidAI/LFM3-Audio-2B-MLX-8bit"
+        }
+      ]
+    },
+    {
+      "id": "lfm25-audio",
+      "name": "LFM2.5 Audio",
+      "maker": "Liquid AI",
+      "kind": "chat",
+      "env": "mlx",
+      "adapter": "lfm_audio",
+      "repo": "mlx-community/LFM2.5-Audio-1.5B-8bit",
+      "summary": "A 1.5B speech-to-speech model: a spoken question in, a spoken answer and its text out. Here it can also call tools: the clock, a calculator, dice, a coin and the battery.",
+      "license": "LFM Open License 1.0",
+      "released": "2025-12",
+      "caution": "Revenue-capped licence",
+      "size": "2.4 GB",
+      "languages": "English",
+      "note": "Ask it the time, a sum, to roll a die or flip a coin, or how much battery is left, and the take shows the call it made. The model was not trained to call tools from speech, so the app leads it through one in steps (it transcribes, weighs each tool, answers from the result and reads the answer out); it sometimes misses a request or calls a tool nobody asked for. The licence allows commercial use only for organisations under $10M in annual revenue.",
+      "options": {
+        "tools": {
+          "alone": 0.15,
+          "together": 0.3
+        },
+        "voice": "US female"
+      },
+      "downloads": [
+        {
+          "repo": "mlx-community/LFM2.5-Audio-1.5B-8bit"
+        }
+      ]
+    },
+    {
+      "id": "enhancer",
+      "name": "Prompt enhancer",
+      "maker": "Google",
+      "kind": "helper",
+      "env": "mlx",
+      "adapter": "llm",
+      "repo": "mlx-community/gemma-4-e4b-it-4bit",
+      "summary": "Gemma 4 E4B, a small language model that rewrites your line for the voice model you have selected: punctuation for delivery, numbers spelled out, and the emotion tags and cues that model understands. It powers the Enhance button.",
+      "license": "Gemma",
+      "released": "2026-03",
+      "size": "5.2 GB",
+      "languages": "Multilingual",
+      "note": "",
+      "downloads": [
+        {
+          "repo": "mlx-community/gemma-4-e4b-it-4bit",
+          "keep": true
+        }
+      ]
+    }
+  ]
+}

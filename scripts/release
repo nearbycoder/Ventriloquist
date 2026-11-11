@@ -1,0 +1,92 @@
+#!/bin/sh
+# Cuts a release of the version in Cargo.toml: builds and signs the app, has Apple notarize
+# it, makes the installer, publishes both on GitHub and adds the version to the feed that
+# installed copies read (docs/appcast.xml, served by GitHub Pages). Copies in the field then
+# offer the update within a day, or at once from Ventriloquist > Check for Updates.
+#
+# Before running it: set the new version in Cargo.toml, describe it under a "## <version>"
+# heading in CHANGELOG.md, and commit. It needs, once per Mac:
+#
+#   - a "Developer ID Application" certificate in the keychain (Xcode > Settings > Accounts >
+#     Manage Certificates), or its name in SIGN_IDENTITY;
+#   - notarization credentials saved under the name "ventriloquist" (or NOTARY_PROFILE):
+#       xcrun notarytool store-credentials ventriloquist --apple-id <id> --team-id <team>
+#   - the key updates are signed with, in the login keychain (scripts/sparkle's
+#     bin/generate_keys --account ventriloquist made it; bundle's FEED_KEY is its public half);
+#   - gh, signed in with access to the repository.
+#
+# Nothing is published until the app and the installer have both come back notarized.
+set -eu
+cd "$(dirname "$0")/.."
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+NAME=Ventriloquist
+REPO=nearbycoder/Ventriloquist
+SITE=https://nearbycoder.github.io/Ventriloquist/
+VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+TAG="v$VERSION"
+PROFILE=${NOTARY_PROFILE:-ventriloquist}
+IDENTITY=${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | sed -n 's/.*"\(Developer ID Application: .*\)".*/\1/p' | head -1)}
+
+stop() { echo "release: $*" >&2; exit 1; }
+
+[ -n "$IDENTITY" ] || stop "there is no Developer ID Application certificate in the keychain."
+xcrun notarytool history --keychain-profile "$PROFILE" >/dev/null 2>&1 || stop "no notarization credentials are saved as \"$PROFILE\" (xcrun notarytool store-credentials $PROFILE)."
+gh auth status >/dev/null 2>&1 || stop "gh isn't signed in."
+[ "$(git branch --show-current)" = main ] || stop "releases are cut from main."
+[ -z "$(git status --porcelain)" ] || stop "there are uncommitted changes."
+git rev-parse -q --verify "refs/tags/$TAG" >/dev/null && stop "$TAG already exists; set the next version in Cargo.toml."
+
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+
+# This version's part of the changelog is its release notes, here and in the update window.
+awk -v heading="## $VERSION" '$0 == heading { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md | sed -e '/./,$!d' > "$WORK/notes.md"
+[ -s "$WORK/notes.md" ] || stop "CHANGELOG.md says nothing under \"## $VERSION\"."
+
+cargo test --release --quiet
+
+notarize() {
+  xcrun notarytool submit "$1" --keychain-profile "$PROFILE" --wait > "$WORK/notary.log" 2>&1 || true
+  grep -q "status: Accepted" "$WORK/notary.log" || { cat "$WORK/notary.log" >&2; stop "Apple didn't accept $(basename "$1")."; }
+}
+
+SIGN_IDENTITY="$IDENTITY" scripts/bundle --updates
+APP="dist/$NAME.app"
+ditto -c -k --keepParent "$APP" "$WORK/$NAME.zip"
+notarize "$WORK/$NAME.zip"
+xcrun stapler staple -q "$APP"
+
+scripts/dmg
+DMG="dist/$NAME.dmg"
+codesign --force --sign "$IDENTITY" --timestamp "$DMG"
+notarize "$DMG"
+xcrun stapler staple -q "$DMG"
+
+# What installed copies download: the notarized app, zipped, under a name with its version.
+FEED="$WORK/feed"
+mkdir "$FEED"
+ARCHIVE="$FEED/$NAME-$VERSION.zip"
+ditto -c -k --sequesterRsrc --keepParent "$APP" "$ARCHIVE"
+cp "$WORK/notes.md" "$FEED/$NAME-$VERSION.md"
+[ -f docs/appcast.xml ] && cp docs/appcast.xml "$FEED/appcast.xml"
+
+# The signing key leaves the keychain only for as long as the feed takes to write.
+SPARKLE=$(scripts/sparkle)
+(umask 077; "$SPARKLE/bin/generate_keys" --account ventriloquist -x "$WORK/key" >/dev/null)
+"$SPARKLE/bin/generate_appcast" --ed-key-file "$WORK/key" \
+  --download-url-prefix "https://github.com/$REPO/releases/download/$TAG/" \
+  --embed-release-notes --link "$SITE" --maximum-deltas 0 "$FEED"
+rm -f "$WORK/key"
+cp "$FEED/appcast.xml" docs/appcast.xml
+cp sidecar/catalog.json docs/catalog.json
+
+git add docs/appcast.xml docs/catalog.json
+git commit --quiet -m "Release $VERSION"
+git tag "$TAG"
+git push --quiet origin "$TAG"
+# The downloads go up before the feed that points at them.
+gh release create "$TAG" "$DMG" "$ARCHIVE" --repo "$REPO" --title "$NAME $VERSION" --notes-file "$WORK/notes.md" --verify-tag
+git push --quiet origin main
+
+echo "Released $NAME $VERSION: https://github.com/$REPO/releases/tag/$TAG"

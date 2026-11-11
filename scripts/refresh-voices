@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+"""Rebuilds the voice lists in sidecar/catalog.json from where each model publishes them.
+
+    scripts/refresh-voices
+
+Kokoro's, Qwen3-TTS's and LFM3's voices are fixed sets written out here. Phonon's come from
+the `voices.jsonl` in its voice repository, Ming's from the voice tables in its cookbook, and
+Kitten's from the `voices.json` beside its weights.
+Run it when a model adds voices; everything else in the catalog is left as it is.
+"""
+
+import json
+import re
+import urllib.request
+from pathlib import Path
+
+CATALOG = Path(__file__).resolve().parent.parent / "sidecar" / "catalog.json"
+PHONON = "https://huggingface.co/gradium/phonon-voices/resolve/main/voices.jsonl"
+MING = "https://raw.githubusercontent.com/inclusionAI/Ming-3.0-tts/main/cookbooks/instruction_en.md"
+KITTEN = "https://huggingface.co/KittenML/kitten-tts-2/resolve/main/voices/voices.json"
+
+
+def fetch(url):
+    with urllib.request.urlopen(url, timeout=60) as response:
+        return response.read().decode("utf-8")
+
+
+def voice(id, name, group, detail="", lang="en"):
+    return {"id": id, "name": name, "group": group, "detail": detail, "lang": lang}
+
+
+def kokoro():
+    """The 54 voices of Kokoro v1.0. The first letter is the language, the second the gender."""
+    languages = {
+        "a": ("English (US)", "en"), "b": ("English (UK)", "en"), "e": ("Spanish", "es"), "f": ("French", "fr"),
+        "h": ("Hindi", "hi"), "i": ("Italian", "it"), "j": ("Japanese", "ja"), "p": ("Portuguese (Brazil)", "pt"),
+        "z": ("Mandarin Chinese", "zh"),
+    }
+    names = (
+        "af_heart af_bella af_nicole af_aoede af_kore af_sarah af_nova af_sky af_alloy af_jessica af_river "
+        "am_michael am_fenrir am_puck am_echo am_eric am_liam am_onyx am_adam am_santa "
+        "bf_emma bf_isabella bf_alice bf_lily bm_george bm_fable bm_lewis bm_daniel "
+        "ef_dora em_alex em_santa ff_siwis hf_alpha hf_beta hm_omega hm_psi if_sara im_nicola "
+        "jf_alpha jf_gongitsune jf_nezumi jf_tebukuro jm_kumo pf_dora pm_alex pm_santa "
+        "zf_xiaobei zf_xiaoni zf_xiaoxiao zf_xiaoyi zm_yunjian zm_yunxi zm_yunxia zm_yunyang"
+    ).split()
+    out = []
+    for v in names:
+        group, lang = languages[v[0]]
+        out.append(voice(v, v[3:].capitalize(), group, "Female" if v[1] == "f" else "Male", lang))
+    return out
+
+
+def phonon():
+    """The English voices of Phonon's catalog; the 31M model here speaks only English."""
+    groups = {"en-us": "English (US)", "en-gb": "English (UK)", "characters": "Characters"}
+    out = [voice("default", "Default", "English (US)", "The voice the model ships with")]
+    for line in fetch(PHONON).splitlines():
+        v = json.loads(line)
+        if v["language"] != "en":
+            continue
+        who = ", ".join(part.lower() for part in (v.get("gender"), v.get("age")) if part)
+        detail = " · ".join(part for part in (who.capitalize(), v.get("description") or "") if part)
+        out.append(voice(v["voice_id"], v["name"], groups.get(v["locale"], v["locale"]), detail))
+    return out
+
+
+def ming():
+    """Ming 3.0's built-in voices: five English ones, and the Chinese catalog with its emotions."""
+    out = [
+        voice("US_Emma", "Emma", "English", "Female, American"),
+        voice("US_James", "James", "English", "Male, American"),
+        voice("US_Stella", "Stella", "English", "Female, American"),
+        voice("UK_Charlotte", "Charlotte", "English", "Female, British"),
+        voice("UK_George", "George", "English", "Male, British"),
+    ]
+    text = fetch(MING)
+    section = text[text.index("### Chinese voices without emotion variants") : text.index("### English voices")]
+    plain, emotional = section.split("### Chinese voices with emotion variants")
+
+    def rows(block):
+        for line in block.splitlines():
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if line.startswith("|") and len(cells) >= 5 and not set(cells[0]) <= set(":- ") and cells[0] not in ("ip", "Base voice"):
+                yield cells
+
+    def about(cells):
+        who = ", ".join(c.lower() for c in cells[1:3] if c and c != "-")
+        return " · ".join(part for part in (who.capitalize(), cells[4] if cells[4] != "-" else "") if part)
+
+    for cells in rows(plain):
+        id = cells[0].strip("`")
+        described = cells[1] != "-"
+        # The undescribed ones are named for a show and a character in it.
+        out.append(voice(id, id, "Chinese" if described else "Chinese characters", about(cells), "zh"))
+    for cells in rows(emotional):
+        for emotion, id in re.findall(r"(\w+): `([^`]+)`", cells[6]):
+            out.append(voice(id, f"{cells[0]} · {emotion}", "Chinese with emotion", about(cells), "zh"))
+    return out
+
+
+def kitten():
+    """Kitten TTS 2's voices. People's names are English; the rest say their language."""
+    languages = {
+        "ar": "Arabic", "zh": "Chinese", "nl": "Dutch", "fr": "French", "de": "German", "hi": "Hindi", "id": "Indonesian",
+        "it": "Italian", "ja": "Japanese", "ko": "Korean", "pl": "Polish", "pt": "Portuguese", "ru": "Russian",
+        "es": "Spanish", "tr": "Turkish",
+    }
+    people, characters, others = [], [], []
+    for name, entry in json.loads(fetch(KITTEN)).items():
+        words = entry["voice_id"].split("_")
+        lang = "en"
+        if words[-1] in languages:
+            lang = words.pop()
+        elif words[0] in languages:
+            lang = words.pop(0)
+        while words and words[0].isdigit():
+            words.pop(0)
+        spaced = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", name)
+        about = " ".join(words).capitalize()
+        if words[:2] == ["kitten", "v08"]:
+            about = f"{words[-1].capitalize()}, carried over from KittenTTS 0.8"
+        if lang != "en":
+            spaced = spaced.removeprefix(languages[lang]).strip() or languages[lang]
+            others.append(voice(name, spaced, languages[lang], "" if about.lower() in (spaced.lower(), languages[lang].lower()) else about, lang))
+        elif " " in spaced:
+            characters.append(voice(name, spaced, "English characters"))
+        else:
+            people.append(voice(name, spaced, "English", about))
+    others.sort(key=lambda v: v["group"])
+    return people + characters + others
+
+
+def qwen():
+    return [
+        voice("Ryan", "Ryan", "English", "Male"),
+        voice("Aiden", "Aiden", "English", "Male"),
+        voice("Vivian", "Vivian", "Chinese", "Female", "zh"),
+        voice("Serena", "Serena", "Chinese", "Female", "zh"),
+        voice("Uncle_Fu", "Uncle Fu", "Chinese", "Male", "zh"),
+        voice("Dylan", "Dylan", "Chinese", "Male, Beijing dialect", "zh"),
+        voice("Eric", "Eric", "Chinese", "Male, Sichuan dialect", "zh"),
+        voice("Ono_Anna", "Ono Anna", "Japanese", "Female", "ja"),
+        voice("Sohee", "Sohee", "Korean", "Female", "ko"),
+    ]
+
+
+def lfm3():
+    return [voice("female", "Female", "English"), voice("male", "Male", "English")]
+
+
+def main():
+    catalog = json.loads(CATALOG.read_text())
+    lists = {"kokoro": kokoro(), "phonon": phonon(), "ming": ming(), "qwen3-voices": qwen(), "lfm3-tts": lfm3(), "kitten": kitten()}
+    for model in catalog["models"]:
+        voices = lists.get(model["id"])
+        if voices is None:
+            continue
+        ids = [v["id"] for v in voices]
+        assert len(ids) == len(set(ids)), f"{model['id']} lists a voice twice"
+        model["voices"] = voices
+        if model.get("voice_default") not in ids:
+            model["voice_default"] = ids[0]
+        print(f"{model['id']:<14} {len(voices):>4} voices")
+    CATALOG.write_text(json.dumps(catalog, indent=2, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

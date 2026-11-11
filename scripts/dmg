@@ -1,0 +1,55 @@
+#!/bin/sh
+# Builds the installer, dist/Ventriloquist.dmg, from dist/Ventriloquist.app: a disk image
+# that opens on the app beside the Applications folder, with an arrow from one to the other.
+#
+# The app draws the window's background itself (--scene installer). dmgbuild lays the window
+# out by writing Finder's own settings file, so no Finder window has to open here.
+set -eu
+cd "$(dirname "$0")/.."
+
+NAME=Ventriloquist
+APP="dist/$NAME.app"
+DMG="dist/$NAME.dmg"
+[ -d "$APP" ] || { echo "There is no $APP yet: run scripts/bundle first." >&2; exit 1; }
+command -v uvx >/dev/null || { echo "The installer is built with uv (brew install uv)." >&2; exit 1; }
+
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+
+# The window is 660 by 400 points; Finder wants the picture once at that size and once at
+# twice it, and dmgbuild joins the pair when they are named this way.
+BIN="$APP/Contents/MacOS/$NAME"
+"$BIN" --snap "$WORK/background.png" --scene installer --size 660x400 --scale 1 >/dev/null 2>&1
+"$BIN" --snap "$WORK/background@2x.png" --scene installer --size 660x400 --scale 2 >/dev/null 2>&1
+
+cat > "$WORK/settings.py" <<'PY'
+import os
+
+app = defines["app"]
+name = os.path.basename(app)
+
+format = "UDZO"
+files = [app]
+symlinks = {"Applications": "/Applications"}
+icon = os.path.join(app, "Contents/Resources", name.replace(".app", ".icns"))
+background = defines["background"]
+
+# The window's frame; its title bar takes 28 points of the height.
+window_rect = ((200, 160), (660, 428))
+default_view = "icon-view"
+show_status_bar = False
+show_tab_view = False
+show_toolbar = False
+show_pathbar = False
+show_sidebar = False
+include_icon_view_settings = True
+arrange_by = None
+icon_size = 128
+text_size = 13
+# The centres src/view/app_icon.rs draws its arrow between.
+icon_locations = {name: (180, 190), "Applications": (480, 190)}
+PY
+
+rm -f "$DMG"
+uvx --quiet --from dmgbuild==1.6.7 dmgbuild -s "$WORK/settings.py" -D app="$PWD/$APP" -D background="$WORK/background.png" "$NAME" "$DMG" >/dev/null
+echo "Built $DMG"

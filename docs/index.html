@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ventriloquist: open voice models, side by side, on your Mac</title>
+<meta name="description" content="A native Mac app for trying open-source text-to-speech, voice cloning, voice conversion and spoken conversation models. Everything runs on your Mac, and each model downloads only when you ask for it.">
+<meta property="og:title" content="Ventriloquist">
+<meta property="og:description" content="Open voice models, side by side, on your Mac.">
+<meta property="og:image" content="https://nearbycoder.github.io/Ventriloquist/assets/takes-dark.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+  :root {
+    --ground: #141210;
+    --raised: #1c1917;
+    --line: #2e2a26;
+    --line-strong: #3d3833;
+    --ink: #f1ece5;
+    --ink-soft: #b3aa9e;
+    --ink-faint: #81796e;
+    --amber: #f5a843;
+    --amber-deep: #e8862a;
+    --on-amber: #1b1408;
+    --good: #4cc38a;
+    --shadow: 0 30px 80px -20px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.06);
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", system-ui, sans-serif;
+    --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --ground: #faf8f4;
+      --raised: #ffffff;
+      --line: #e6e0d7;
+      --line-strong: #d3cbbf;
+      --ink: #1d1916;
+      --ink-soft: #5b544b;
+      --ink-faint: #8a8176;
+      --amber: #c26a07;
+      --amber-deep: #a85805;
+      --on-amber: #fffaf2;
+      --good: #1f8a55;
+      --shadow: 0 30px 70px -25px rgb(60 40 10 / 0.35), 0 0 0 1px rgb(0 0 0 / 0.07);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 17px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; height: auto; }
+  .wrap { width: min(1120px, 100% - 48px); margin-inline: auto; }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 6px; }
+
+  /* Top bar */
+  header.top { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--ground) 82%, transparent); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid var(--line); }
+  .top .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; text-decoration: none; letter-spacing: -0.01em; }
+  .brand img { width: 30px; height: 30px; }
+  .top nav { display: flex; gap: 24px; margin-left: auto; font-size: 15px; }
+  .top nav a { color: var(--ink-soft); text-decoration: none; }
+  .top nav a:hover { color: var(--ink); }
+  .button { display: inline-flex; align-items: center; gap: 9px; height: 46px; padding: 0 22px; border-radius: 12px; font-weight: 650; font-size: 16px; text-decoration: none; white-space: nowrap; transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease; }
+  .button:active { transform: scale(0.98); }
+  .button.primary { background: linear-gradient(180deg, var(--amber), var(--amber-deep)); color: var(--on-amber); }
+  .button.primary:hover { filter: brightness(1.07); }
+  .button.quiet { border: 1px solid var(--line-strong); color: var(--ink); }
+  .button.quiet:hover { background: var(--raised); }
+  .button.small { height: 36px; padding: 0 14px; font-size: 14px; border-radius: 10px; }
+  .button svg { width: 17px; height: 17px; flex: none; }
+
+  /* Hero */
+  .hero { padding: 84px 0 0; }
+  .hero-top { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 48px; align-items: center; }
+  .eyebrow { font: 500 13px/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--amber); margin: 0 0 22px; }
+  h1 { font: 700 clamp(40px, 6.2vw, 72px)/1.02 var(--display); letter-spacing: -0.035em; margin: 0; text-wrap: balance; }
+  .lede { font-size: clamp(18px, 2vw, 21px); line-height: 1.5; color: var(--ink-soft); max-width: 34em; margin: 26px 0 0; text-wrap: pretty; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+  .fine { font-size: 14px; color: var(--ink-faint); margin: 16px 0 0; }
+  .mark { width: 100%; height: auto; }
+  .mark rect { fill: url(#bar); transform-box: fill-box; transform-origin: center; animation: speak 2.6s ease-in-out infinite; }
+  @keyframes speak { 0%, 100% { transform: scaleY(1); } 35% { transform: scaleY(0.62); } 70% { transform: scaleY(1.12); } }
+  .shot { border-radius: 14px; box-shadow: var(--shadow); background: var(--raised); overflow: hidden; }
+  .hero .shot { margin-top: 72px; }
+  .shot img { width: 100%; }
+
+  /* Sections */
+  section { padding: 112px 0 0; }
+  h2 { font: 700 clamp(28px, 3.6vw, 42px)/1.1 var(--display); letter-spacing: -0.028em; margin: 0; text-wrap: balance; }
+  .section-lede { color: var(--ink-soft); max-width: 40em; margin: 18px 0 0; text-wrap: pretty; }
+  .feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 56px; align-items: center; }
+  .feature + .feature { margin-top: 112px; }
+  .feature.flip { grid-template-columns: minmax(0, 8fr) minmax(0, 5fr); }
+  .feature.flip > .words { order: 2; }
+  .feature h3 { font: 700 clamp(24px, 2.8vw, 32px)/1.15 var(--display); letter-spacing: -0.025em; margin: 0; text-wrap: balance; }
+  .feature p { color: var(--ink-soft); margin: 16px 0 0; text-wrap: pretty; }
+  .feature ul { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 10px; color: var(--ink-soft); font-size: 16px; }
+  .feature li { padding-left: 22px; position: relative; }
+  .feature li::before { content: ""; position: absolute; left: 2px; top: 0.5em; width: 4px; height: 0.75em; border-radius: 2px; background: var(--amber); }
+  .feature .kicker { font: 500 12px/1 var(--mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 16px; }
+
+  /* Models */
+  .counts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 30px; }
+  .chip { font: 500 14px/1 var(--sans); padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line-strong); background: none; color: var(--ink-soft); cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+  .table-scroll { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--raised); overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 640px; }
+  th { text-align: left; font: 500 12px/1 var(--mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  td { padding: 14px 20px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.name strong { font-weight: 650; }
+  td.name span { color: var(--ink-faint); margin-left: 8px; }
+  td.name p { margin: 4px 0 0; color: var(--ink-soft); font-size: 14px; line-height: 1.45; max-width: 46em; }
+  td.num { font-family: var(--mono); font-size: 14px; white-space: nowrap; color: var(--ink-soft); }
+  td.licence { color: var(--ink-soft); font-size: 14px; }
+  .fallback { padding: 22px; color: var(--ink-soft); }
+
+  /* Install */
+  .steps { list-style: none; counter-reset: step; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .steps li { counter-increment: step; border: 1px solid var(--line); border-radius: 14px; background: var(--raised); padding: 24px; }
+  .steps li::before { content: counter(step); display: block; font: 600 13px/1 var(--mono); color: var(--amber); margin-bottom: 16px; }
+  .steps h3 { font: 650 18px/1.3 var(--display); letter-spacing: -0.01em; margin: 0; }
+  .steps p { color: var(--ink-soft); font-size: 15.5px; margin: 8px 0 0; }
+  .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 48px; margin-top: 40px; color: var(--ink-soft); font-size: 15.5px; }
+  .notes h3 { font: 650 16px/1.3 var(--sans); color: var(--ink); margin: 0 0 6px; }
+  .notes p { margin: 0; }
+  code { font: 0.9em var(--mono); background: color-mix(in srgb, var(--ink) 9%, transparent); padding: 2px 6px; border-radius: 6px; }
+
+  footer { margin-top: 128px; border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--ink-faint); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+  footer a { color: var(--ink-soft); text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+  footer .push { margin-left: auto; }
+
+  @media (max-width: 860px) {
+    .hero { padding-top: 56px; }
+    .hero-top { grid-template-columns: 1fr; }
+    .mark { display: none; }
+    .top nav a:not(.button) { display: none; }
+    section { padding-top: 80px; }
+    .feature, .feature.flip { grid-template-columns: 1fr; gap: 28px; }
+    .feature.flip > .words { order: 0; }
+    .feature + .feature { margin-top: 72px; }
+    .steps, .notes { grid-template-columns: 1fr; }
+    footer .push { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .mark rect { animation: none; }
+    .button { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/icon.png" alt="">Ventriloquist</a>
+    <nav>
+      <a href="#bench">The bench</a>
+      <a href="#models">Models</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/nearbycoder/Ventriloquist">GitHub</a>
+    </nav>
+    <a class="button primary small" data-download href="https://github.com/nearbycoder/Ventriloquist/releases/latest">Download</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero wrap">
+    <div class="hero-top">
+      <div>
+        <p class="eyebrow">Open voice models, on your Mac</p>
+        <h1>Type a line. Hear every model say it.</h1>
+        <p class="lede">Ventriloquist is a native Mac app for trying open-source voice models side by side: text to speech, voice cloning, voice conversion and spoken conversation. Everything runs on your Mac, and nothing leaves it.</p>
+        <div class="actions">
+          <a class="button primary" data-download href="https://github.com/nearbycoder/Ventriloquist/releases/latest">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.75 7.5 8 10.75 11.25 7.5M3 13.25h10"/></svg>
+            <span data-download-label>Download for Mac</span>
+          </a>
+          <a class="button quiet" href="https://github.com/nearbycoder/Ventriloquist">View the source</a>
+        </div>
+        <p class="fine" data-download-fine>Free and open source. Requires a Mac with Apple silicon.</p>
+      </div>
+      <svg class="mark" viewBox="60 130 704 600" role="img" aria-label="Ventriloquist's mark: a V made of sound bars">
+        <defs><linearGradient id="bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc163"/><stop offset="1" stop-color="#ee7f1f"/></linearGradient></defs>
+        <rect x="93" y="175" width="46" height="170" rx="23" style="animation-delay:-0.2s"/>
+        <rect x="167" y="205.5" width="46" height="259" rx="23" style="animation-delay:-1.4s"/>
+        <rect x="241" y="302.5" width="46" height="215" rx="23" style="animation-delay:-0.7s"/>
+        <rect x="315" y="333" width="46" height="304" rx="23" style="animation-delay:-2.1s"/>
+        <rect x="389" y="430" width="46" height="260" rx="23" style="animation-delay:-1.0s"/>
+        <rect x="463" y="333" width="46" height="304" rx="23" style="animation-delay:-0.4s"/>
+        <rect x="537" y="302.5" width="46" height="215" rx="23" style="animation-delay:-1.8s"/>
+        <rect x="611" y="205.5" width="46" height="259" rx="23" style="animation-delay:-0.9s"/>
+        <rect x="685" y="175" width="46" height="170" rx="23" style="animation-delay:-1.6s"/>
+      </svg>
+    </div>
+    <div class="shot">
+      <picture>
+        <source srcset="assets/takes-light.png" media="(prefers-color-scheme: light)">
+        <img src="assets/takes-dark.png" width="2240" height="1520" alt="Ventriloquist's bench: a line of text, and the same line spoken by Kitten TTS 2 and ZONOS3 Mini, each with its waveform, speed and memory use.">
+      </picture>
+    </div>
+  </div>
+
+  <section id="bench">
+    <div class="wrap">
+      <div class="feature">
+        <div class="words">
+          <p class="kicker">Voice to voice</p>
+          <h3>Clone a voice from a few seconds, or re-voice a whole recording</h3>
+          <p>Cloning models take a short sample. Conversion models keep the words and timing of a recording and change who is saying them. Use your own voice, or one you have permission to use.</p>
+          <ul>
+            <li>Record in the app or drop in a file</li>
+            <li>Built-in voices for each model, with a preview before you commit</li>
+            <li>Time to make, speed against real time and peak memory on every take</li>
+          </ul>
+        </div>
+        <div class="shot">
+          <picture>
+            <source srcset="assets/convert-light.png" media="(prefers-color-scheme: light)">
+            <img src="assets/convert-dark.png" width="2240" height="1520" loading="lazy" alt="Voice conversion: a recording and a target voice, converted by Seed-VC.">
+          </picture>
+        </div>
+      </div>
+
+      <div class="feature flip">
+        <div class="words">
+          <p class="kicker">Download on demand</p>
+          <h3>Nothing is bundled. You choose what to fetch.</h3>
+          <p>The app itself is a few megabytes. Each model comes from Hugging Face when you ask for it, into its own environment, and leaves cleanly when you remove it. The Models page shows what each one weighs before you start.</p>
+        </div>
+        <div class="shot">
+          <picture>
+            <source srcset="assets/models-light.png" media="(prefers-color-scheme: light)">
+            <img src="assets/models-dark.png" width="2240" height="1520" loading="lazy" alt="The Models page: each model with its maker, release date, licence, size and a Download button.">
+          </picture>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="words">
+          <p class="kicker">Conversation</p>
+          <h3>Ask out loud, and watch what it reaches for</h3>
+          <p>Speech-to-speech models answer a recorded question in a voice of their own. Where a model can call tools, the take shows which one it called and what came back.</p>
+          <ul>
+            <li>Sophon Realtime 32B, ported here to run on Apple silicon</li>
+            <li>LFM2.5 Audio with a clock, a calculator, dice, a coin and the battery level</li>
+          </ul>
+        </div>
+        <div class="shot">
+          <picture>
+            <source srcset="assets/tools-light.png" media="(prefers-color-scheme: light)">
+            <img src="assets/tools-dark.png" width="2240" height="1520" loading="lazy" alt="A conversation with LFM2.5 Audio: spoken answers, two of them showing the tool call behind them.">
+          </picture>
+        </div>
+      </div>
+
+      <div class="feature flip">
+        <div class="words">
+          <p class="kicker">Direction</p>
+          <h3>Describe a scene and get the dialogue, marked up for the model that will speak it</h3>
+          <p>A small local language model writes lines from your direction, or rewrites yours with the pauses, laughs and emotion tags the chosen voice model understands. Standing instructions shape every rewrite.</p>
+        </div>
+        <div class="shot">
+          <picture>
+            <source srcset="assets/scene-light.png" media="(prefers-color-scheme: light)">
+            <img src="assets/scene-dark.png" width="2240" height="1520" loading="lazy" alt="The scene writer: a direction, and the dialogue written from it.">
+          </picture>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="models">
+    <div class="wrap">
+      <h2>The catalog</h2>
+      <p class="section-lede">Open-weights models that have a real path on Apple silicon, each installed and run before it was listed. Licences differ: several are free for any use, some are capped by revenue or limited to research, and the app shows which before you download.</p>
+      <div class="counts" id="filters" hidden></div>
+      <div class="table-scroll">
+        <table id="catalog" hidden>
+          <thead><tr><th>Model</th><th>Released</th><th>Download</th><th>Licence</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="fallback" id="catalog-fallback">The full list is in <a href="https://github.com/nearbycoder/Ventriloquist/blob/main/sidecar/catalog.json">the catalog file</a> on GitHub.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Install</h2>
+      <ol class="steps">
+        <li><h3>Download the installer</h3><p>A signed disk image, checked by Apple, so it opens without a warning.</p></li>
+        <li><h3>Drag it to Applications</h3><p>Open the image and drop Ventriloquist on the Applications folder beside it.</p></li>
+        <li><h3>Pick your models</h3><p>Open the Models page and download the ones you want to hear. Start small: Kokoro is 0.7 GB.</p></li>
+      </ol>
+      <div class="notes">
+        <div><h3>Updates</h3><p>The app checks for a new version once a day and offers it with its release notes. You can also ask from the menu: <code>Ventriloquist &rsaquo; Check for Updates</code>.</p></div>
+        <div><h3>What it needs</h3><p>A Mac with Apple silicon, plus <a href="https://docs.astral.sh/uv/">uv</a> and git for setting up model environments. Small models run in a few gigabytes of memory; the largest want far more, and the catalog says how much each downloads.</p></div>
+        <div><h3>Privacy</h3><p>Text, recordings and generated audio stay on your Mac. The network is used to download models and to check for updates.</p></div>
+        <div><h3>Build it yourself</h3><p>It is a Rust app on <a href="https://github.com/anomalyco/rune">Rune</a>. Clone the repository and run <code>scripts/bundle --install</code>.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Ventriloquist is MIT licensed. The models keep their own licences.</span>
+    <a class="push" href="https://github.com/nearbycoder/Ventriloquist">GitHub</a>
+    <a href="https://github.com/nearbycoder/Ventriloquist/releases">Releases</a>
+    <a href="https://github.com/nearbycoder/Ventriloquist/blob/main/CHANGELOG.md">Changelog</a>
+  </div>
+</footer>
+
+<script>
+  const REPO = "nearbycoder/Ventriloquist";
+
+  // The download buttons lead to the releases page until a release with an installer exists;
+  // then they fetch the installer itself and say which version it is.
+  fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
+    .then((response) => (response.ok ? response.json() : null))
+    .then((release) => {
+      const installer = release?.assets?.find((asset) => asset.name === "Ventriloquist.dmg");
+      const fine = document.querySelector("[data-download-fine]");
+      if (!installer) {
+        document.querySelectorAll("[data-download]").forEach((a) => (a.href = `https://github.com/${REPO}#build`));
+        document.querySelector("[data-download-label]").textContent = "Build from source";
+        fine.textContent = "The first signed release is being prepared. Until then it builds from source in a couple of minutes. Requires a Mac with Apple silicon.";
+        return;
+      }
+      document.querySelectorAll("[data-download]").forEach((a) => (a.href = installer.browser_download_url));
+      const megabytes = Math.round(installer.size / 1e6);
+      fine.textContent = `Version ${release.tag_name.replace(/^v/, "")}, ${megabytes} MB. Free and open source. Requires a Mac with Apple silicon.`;
+    })
+    .catch(() => {});
+
+  // The catalog is the app's own, copied here at each release.
+  const KINDS = [["tts", "Text to speech"], ["vc", "Voice conversion"], ["chat", "Conversation"], ["helper", "Helpers"]];
+  const month = (released) => {
+    const [year, m] = (released || "").split("-");
+    return m ? `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][m - 1]} ${year}` : year || "";
+  };
+  fetch("catalog.json")
+    .then((response) => response.json())
+    .then(({ models }) => {
+      const table = document.getElementById("catalog");
+      const body = table.querySelector("tbody");
+      const filters = document.getElementById("filters");
+      const cell = (className, text) => Object.assign(document.createElement("td"), { className, textContent: text });
+      const show = (kind) => {
+        body.replaceChildren(
+          ...models.filter((model) => !kind || model.kind === kind).map((model) => {
+            const row = document.createElement("tr");
+            const name = document.createElement("td");
+            name.className = "name";
+            name.append(
+              Object.assign(document.createElement("strong"), { textContent: model.name }),
+              Object.assign(document.createElement("span"), { textContent: model.maker }),
+              Object.assign(document.createElement("p"), { textContent: model.summary }),
+            );
+            row.append(name, cell("num", month(model.released)), cell("num", model.size || ""), cell("licence", model.license || ""));
+            return row;
+          }),
+        );
+        filters.querySelectorAll("button").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.kind === (kind || ""))));
+      };
+      for (const [kind, label] of [["", "All"], ...KINDS]) {
+        const count = models.filter((model) => !kind || model.kind === kind).length;
+        if (!count) continue;
+        const button = Object.assign(document.createElement("button"), { className: "chip", type: "button", textContent: `${label} ${count}` });
+        button.dataset.kind = kind;
+        button.addEventListener("click", () => show(kind));
+        filters.append(button);
+      }
+      show("");
+      document.getElementById("catalog-fallback").remove();
+      table.hidden = false;
+      filters.hidden = false;
+    })
+    .catch(() => {});
+</script>
+</body>
+</html>

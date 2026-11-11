@@ -1,0 +1,27 @@
+#!/bin/sh
+# Prints the folder of the Sparkle distribution this app is built against, downloading it into
+# target/vendor the first time. It holds Sparkle.framework and, in bin/, the tools that sign
+# updates and write the feed. Nothing of it is kept in the repository.
+set -eu
+cd "$(dirname "$0")/.."
+
+VERSION=2.10.1
+SHA256=1a856d2a9edb8e628de88121d7be04cf0e2167f8641650b78fca00b14244cf27
+DIR="$PWD/target/vendor/Sparkle-$VERSION"
+
+if [ ! -d "$DIR/Sparkle.framework" ]; then
+  mkdir -p target/vendor
+  ARCHIVE="target/vendor/Sparkle-$VERSION.tar.xz"
+  curl -fsSL -o "$ARCHIVE" "https://github.com/sparkle-project/Sparkle/releases/download/$VERSION/Sparkle-$VERSION.tar.xz"
+  if [ "$(shasum -a 256 "$ARCHIVE" | cut -d' ' -f1)" != "$SHA256" ]; then
+    echo "Sparkle $VERSION didn't match its checksum; nothing was unpacked." >&2
+    rm -f "$ARCHIVE"
+    exit 1
+  fi
+  rm -rf "$DIR.partial"
+  mkdir "$DIR.partial"
+  tar -xJf "$ARCHIVE" -C "$DIR.partial"
+  mv "$DIR.partial" "$DIR"
+  rm -f "$ARCHIVE"
+fi
+echo "$DIR"

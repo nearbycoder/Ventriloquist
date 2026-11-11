@@ -1,0 +1,167 @@
+#!/bin/sh
+# Builds Ventriloquist.app in dist/. Pass --install to copy it into /Applications and --open
+# to launch it afterwards.
+#
+# The bundle is signed ad hoc, which is enough to run it here. macOS ties the microphone
+# permission to the signature, so it asks again after each rebuild; set SIGN_IDENTITY to a
+# signing identity ("Developer ID Application: ...") to keep the answer. A bundle signed
+# with an identity also gets the hardened runtime, which notarization requires.
+#
+# --updates makes the bundle one that updates itself: it carries Sparkle and the address of
+# the feed it reads (docs/appcast.xml, as GitHub Pages serves it). scripts/release builds
+# with it. FEED_URL, VERSION and BUNDLE_ID stand in for the real ones when trying an update
+# out against a feed of your own.
+set -eu
+cd "$(dirname "$0")/.."
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+NAME=Ventriloquist
+ID=${BUNDLE_ID:-com.ventriloquist.app}
+VERSION=${VERSION:-$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)}
+FEED_URL=${FEED_URL:-https://nearbycoder.github.io/Ventriloquist/appcast.xml}
+# The public half of the key updates are signed with. The private half is in the login
+# keychain of whoever cuts releases (scripts/release).
+FEED_KEY=7ZnGdKhCgx/FwHhGjL+QR0FUR89KFcwk3cit1yKPKVE=
+IDENTITY=${SIGN_IDENTITY:--}
+APP="dist/$NAME.app"
+INSTALL=0
+OPEN=0
+UPDATES=0
+for arg in "$@"; do
+  case "$arg" in
+    --install) INSTALL=1 ;;
+    --open) OPEN=1 ;;
+    --updates) UPDATES=1 ;;
+    *) echo "usage: scripts/bundle [--updates] [--install] [--open]" >&2; exit 2 ;;
+  esac
+done
+
+cargo build --release
+BIN=target/release/ventriloquist
+
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+
+# The app draws its own icon: render it headless, then build the sizes macOS wants.
+"$BIN" --snap "$WORK/icon.png" --scene icon --size 1024x1024 --scale 1 >/dev/null 2>&1
+SET="$WORK/$NAME.iconset"
+mkdir "$SET"
+for size in 16 32 128 256 512; do
+  sips -z "$size" "$size" "$WORK/icon.png" --out "$SET/icon_${size}x${size}.png" >/dev/null
+  sips -z $((size * 2)) $((size * 2)) "$WORK/icon.png" --out "$SET/icon_${size}x${size}@2x.png" >/dev/null
+done
+
+STAGE="$WORK/$NAME.app"
+mkdir -p "$STAGE/Contents/MacOS" "$STAGE/Contents/Resources"
+
+# macOS 26 and later draw the tile themselves and shrink an .icns onto a plate of their own,
+# so they get an Icon Composer document instead: the graphite as its fill and the bars as its
+# one layer, flat so the amber stays as drawn. Compiling it needs Xcode; without Xcode the
+# bundle has the .icns alone.
+if xcrun --find actool >/dev/null 2>&1; then
+  DOC="$WORK/$NAME.icon"
+  mkdir -p "$DOC/Assets"
+  "$BIN" --snap "$DOC/Assets/glyph.png" --scene icon-glyph --size 1024x1024 --scale 1 >/dev/null 2>&1
+  cat > "$DOC/icon.json" <<JSON
+{
+  "fill": {
+    "linear-gradient": ["extended-srgb:0.200,0.184,0.165,1.0", "extended-srgb:0.086,0.075,0.063,1.0"],
+    "orientation": {"start": {"x": 0.5, "y": 0.0}, "stop": {"x": 0.5, "y": 1.0}}
+  },
+  "groups": [
+    {
+      "layers": [{"image-name": "glyph.png", "name": "glyph", "glass": false}],
+      "shadow": {"kind": "neutral", "opacity": 0.5},
+      "translucency": {"enabled": false, "value": 0.5}
+    }
+  ],
+  "supported-platforms": {"squares": ["macOS"]}
+}
+JSON
+  xcrun actool "$DOC" --compile "$STAGE/Contents/Resources" --app-icon "$NAME" --platform macosx \
+    --minimum-deployment-target 13.0 --output-partial-info-plist "$WORK/icon.plist" >/dev/null
+fi
+# After the compiler, which writes a small .icns of its own under the same name.
+iconutil -c icns "$SET" -o "$STAGE/Contents/Resources/$NAME.icns"
+cp "$BIN" "$STAGE/Contents/MacOS/$NAME"
+
+UPDATER=""
+if [ "$UPDATES" = 1 ]; then
+  SPARKLE=$(scripts/sparkle)
+  mkdir "$STAGE/Contents/Frameworks"
+  cp -R "$SPARKLE/Sparkle.framework" "$STAGE/Contents/Frameworks/"
+  UPDATER="  <key>SUFeedURL</key><string>$FEED_URL</string>
+  <key>SUPublicEDKey</key><string>$FEED_KEY</string>
+  <key>SUEnableAutomaticChecks</key><true/>"
+fi
+cat > "$STAGE/Contents/Info.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleName</key><string>$NAME</string>
+  <key>CFBundleDisplayName</key><string>$NAME</string>
+  <key>CFBundleIdentifier</key><string>$ID</string>
+  <key>CFBundleExecutable</key><string>$NAME</string>
+  <key>CFBundleIconFile</key><string>$NAME</string>
+  <key>CFBundleIconName</key><string>$NAME</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>$VERSION</string>
+  <key>CFBundleVersion</key><string>$VERSION</string>
+  <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+  <key>LSMinimumSystemVersion</key><string>13.0</string>
+  <key>LSApplicationCategoryType</key><string>public.app-category.developer-tools</string>
+  <key>NSHighResolutionCapable</key><true/>
+  <key>NSSupportsAutomaticGraphicsSwitching</key><true/>
+  <key>NSMicrophoneUsageDescription</key><string>Ventriloquist records your voice to use as a voice sample, or as speech for a model to convert or answer. Recordings stay on this Mac.</string>
+$UPDATER
+</dict>
+</plist>
+PLIST
+
+if [ "$IDENTITY" = - ]; then
+  codesign --force --deep --sign - "$STAGE" 2>/dev/null
+else
+  # Inside out, as codesign wants nested code signed: Sparkle's helpers, Sparkle, then the
+  # app. Under the hardened runtime the microphone has to be asked for by entitlement.
+  cat > "$WORK/entitlements.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>com.apple.security.device.audio-input</key><true/>
+</dict>
+</plist>
+PLIST
+  sign() {
+    codesign --force --sign "$IDENTITY" --options runtime --timestamp "$@" 2>"$WORK/codesign.log" || { cat "$WORK/codesign.log" >&2; exit 1; }
+  }
+  if [ "$UPDATES" = 1 ]; then
+    INNER="$STAGE/Contents/Frameworks/Sparkle.framework/Versions/B"
+    sign "$INNER/XPCServices/Installer.xpc"
+    sign --preserve-metadata=entitlements "$INNER/XPCServices/Downloader.xpc"
+    sign "$INNER/Autoupdate"
+    sign "$INNER/Updater.app"
+    sign "$STAGE/Contents/Frameworks/Sparkle.framework"
+  fi
+  sign --entitlements "$WORK/entitlements.plist" "$STAGE"
+fi
+
+mkdir -p dist
+rm -rf "$APP"
+mv "$STAGE" "$APP"
+echo "Built $APP"
+
+if [ "$INSTALL" = 1 ]; then
+  DEST="/Applications/$NAME.app"
+  [ -w /Applications ] || DEST="$HOME/Applications/$NAME.app"
+  mkdir -p "$(dirname "$DEST")"
+  # Quit a running copy first, so the one that opens next is the new build.
+  osascript -e "tell application id \"$ID\" to quit" >/dev/null 2>&1 || true
+  rm -rf "$DEST"
+  cp -R "$APP" "$DEST"
+  echo "Installed $DEST"
+  APP="$DEST"
+fi
+[ "$OPEN" = 1 ] && open "$APP"
+exit 0
