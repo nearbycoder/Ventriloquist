@@ -1015,8 +1015,9 @@
       "downloads": [
         {
           "repo": "Zyphra/ZONOS3-Mini",
+          "revision": "7146a686b62bcb0661528fa300984e815e10152b",
           "allow": [
-            "gguf/zonos3-ptq.gguf",
+            "gguf/backbone-ptq.gguf",
             "gguf/zac.gguf",
             "gguf/spk-encoder.gguf",
             "gguf/steer.gguf",
