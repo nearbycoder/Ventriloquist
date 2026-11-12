@@ -248,14 +248,16 @@ class Zonos:
         from zonos3_mlx.engine import Engine
         from zonos3_mlx.scheduler import Scheduler
 
-        allow = [pattern for part in spec.get("downloads", []) for pattern in part.get("allow", [])]
-        self.root = Path(snapshot_download(spec["repo"], allow_patterns=allow or None)) / "gguf"
+        # The same revision `setup.py` fetched: upstream has renamed these files once already,
+        # and the catalog pins the commit whose names are used below.
+        weights = spec["downloads"][0]
+        self.root = Path(snapshot_download(spec["repo"], revision=weights.get("revision"), allow_patterns=weights.get("allow"))) / "gguf"
         self.default = spec.get("voice_default")
         self.decoder = spec.get("options", {}).get("decoder")
         # The files are named one by one: the runtime looks for them beside the model, and in
         # the Hugging Face cache "beside" is a folder of content hashes.
         self.engine = Engine.load(
-            str(self.root / "zonos3-ptq.gguf"),
+            str(self.root / "backbone-ptq.gguf"),
             zac=[str(self.root / "zac.gguf")],
             spk_encoder=str(self.root / "spk-encoder.gguf"),
             steer=str(self.root / "steer.gguf"),

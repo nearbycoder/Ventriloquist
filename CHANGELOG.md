@@ -3,6 +3,12 @@
 Each release's notes. `scripts/release` publishes the part under the version it is releasing,
 on GitHub and in the app's update window.
 
+## 0.1.1
+
+- ZONOS3 Mini downloads and loads again. Its publisher renamed one of the model's files,
+  which left a new download without it; the app now asks for the file by its new name, at a
+  fixed revision of the model, so a later rename can't break it.
+
 ## 0.1.0
 
 The first release.

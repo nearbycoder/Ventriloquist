@@ -30,7 +30,7 @@ DOWNLOAD = """
 import sys, json
 from huggingface_hub import snapshot_download
 spec = json.loads(sys.argv[1])
-path = snapshot_download(spec["repo"], allow_patterns=spec.get("allow"), ignore_patterns=spec.get("ignore"))
+path = snapshot_download(spec["repo"], revision=spec.get("revision"), allow_patterns=spec.get("allow"), ignore_patterns=spec.get("ignore"))
 print("  in", path)
 """
 

@@ -3461,7 +3461,7 @@ dependencies = [
 
 [[package]]
 name = "ventriloquist"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "objc2 0.5.3",
  "rune",

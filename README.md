@@ -113,7 +113,8 @@ deciding when you have finished. Nor are tool calling and the camera. One record
 and one reply comes out.
 
 ZONOS3 Mini runs on the MLX runtime from Zyphra's own repository, checked out at a fixed
-commit and installed from its lockfile. Its direction field takes the controls the model
+commit and installed from its lockfile, with its weights taken at a fixed revision too (a
+download entry in the catalog may name one), because the files have been renamed upstream. Its direction field takes the controls the model
 ships with, by name and optional amount: `happy`, `whisper 1`, `slower 2`, `british accent`,
 `deep 3`, or a preset such as `Late-night radio`. A voice sample is turned into a speaker
 embedding by the model's own encoder. Its text normaliser needs a library with no macOS
