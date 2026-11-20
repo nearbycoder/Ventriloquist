@@ -76,6 +76,75 @@
           "sync": "zonos3-mlx"
         }
       ]
+    },
+    "inflect-mini": {
+      "python": "3.12",
+      "packages": [
+        "torch==2.11.0",
+        "transformers==4.57.1",
+        "numpy==2.4.2",
+        "spacy==3.8.16",
+        "misaki[en]==0.9.4",
+        "espeakng-loader==0.2.4",
+        "phonemizer-fork==3.3.2",
+        "loguru==0.7.3",
+        "attrs==26.1.0",
+        "huggingface-hub==0.36.2",
+        "num2words==0.5.14",
+        "regex==2026.9.29",
+        "addict==2.4.0",
+        "soundfile==0.13.1",
+        "PyYAML==6.0.3",
+        "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"
+      ]
+    },
+    "inflect-micro": {
+      "python": "3.12",
+      "packages": [
+        "torch==2.11.0",
+        "transformers==4.57.1",
+        "numpy==2.4.2",
+        "spacy==3.8.16",
+        "misaki[en]==0.9.4",
+        "espeakng-loader==0.2.4",
+        "phonemizer-fork==3.3.2",
+        "loguru==0.7.3",
+        "attrs==26.1.0",
+        "huggingface-hub==0.36.2",
+        "num2words==0.5.14",
+        "regex==2026.9.29",
+        "addict==2.4.0",
+        "soundfile==0.13.1",
+        "PyYAML==6.0.3",
+        "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"
+      ]
+    },
+    "inflect-atom": {
+      "python": "3.12",
+      "packages": [
+        "torch==2.11.0",
+        "transformers==4.57.1",
+        "numpy==2.4.2",
+        "spacy==3.8.16",
+        "misaki[en]==0.9.4",
+        "espeakng-loader==0.2.4",
+        "phonemizer-fork==3.3.2",
+        "loguru==0.7.3",
+        "attrs==26.1.0",
+        "huggingface-hub==0.36.2",
+        "num2words==0.5.14",
+        "regex==2026.9.29",
+        "addict==2.4.0",
+        "soundfile==0.13.1",
+        "PyYAML==6.0.3",
+        "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl"
+      ]
+    },
+    "reverb": {
+      "python": "3.12",
+      "packages": [
+        "reverb-tts==1.0.0"
+      ]
     }
   },
   "models": [
@@ -1025,6 +1094,429 @@
           ]
         }
       ]
+    },
+    {
+      "id": "inflect-mini",
+      "name": "Inflect Mini",
+      "maker": "Owen Song",
+      "kind": "tts",
+      "env": "inflect-mini",
+      "adapter": "inflect_mini",
+      "repo": "owensong/Inflect-Mini-v3",
+      "summary": "A 34M-parameter English model that runs on the CPU, many times faster than real time. Six voices, eight vocal events such as a laugh or a yawn dropped between phrases, and an optional enhancer for 48 kHz output.",
+      "license": "Apache-2.0",
+      "released": "2026-11",
+      "size": "0.25 GB",
+      "languages": "English",
+      "voices": [
+        {
+          "id": "cassidy",
+          "name": "Cassidy",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "hope",
+          "name": "Hope",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "sophia",
+          "name": "Sophia",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "mark",
+          "name": "Mark",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "james",
+          "name": "James",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "jasper",
+          "name": "Jasper",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        }
+      ],
+      "voice_default": "cassidy",
+      "instruct": "optional",
+      "instruct_hint": "48 kHz, to run the take through the enhancer",
+      "note": "Drop [laugh], [sigh], [gasp], [cough], [yawn], [inhale], [exhale] or [clear_throat] between phrases, with a space either side. They are sounds, not moods: the words around them are read as usual. Write 48 kHz in Direction for the enhancer, which brightens the take rather than improving it outright; a take with events stays at 24 kHz. English only, and a symbol or emoji stops the take. Tuning a voice to a recording is left out: the model's maker supports it on Linux only.",
+      "downloads": [
+        {
+          "repo": "owensong/Inflect-Mini-v3",
+          "revision": "0490aee6a9c66f9375b48287a2c5e5788afd00cc",
+          "dir": "{data}/models/inflect-mini",
+          "ignore": [
+            "extras/tuner/*",
+            "tuner.py",
+            "assets/*",
+            "media/*"
+          ]
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs eight vocal events, written exactly so, each with a space either side and never inside a word: [laugh] [sigh] [gasp] [cough] [yawn] [inhale] [exhale] [clear_throat]. They are sounds made between phrases, not moods, so use at most three and only where a person would make that sound. Plain English otherwise: no other tags, no emoji and no symbols.",
+        "examples": [
+          "I can't believe you did that. [sigh] You promised me... you would never tell anyone.",
+          "We did it! [laugh] After three years of trying... we finally did it!",
+          "The train to Boston leaves at nine fifteen, from platform two."
+        ],
+        "tags": [
+          "[laugh]",
+          "[sigh]",
+          "[gasp]",
+          "[cough]",
+          "[yawn]",
+          "[inhale]",
+          "[exhale]",
+          "[clear_throat]"
+        ],
+        "scene_example": "Did you hear that? [gasp] No, listen... there it is again. Someone's on the stairs. [exhale] I am not imagining it this time."
+      }
+    },
+    {
+      "id": "inflect-micro",
+      "name": "Inflect Micro",
+      "maker": "Owen Song",
+      "kind": "tts",
+      "env": "inflect-micro",
+      "adapter": "inflect_micro",
+      "repo": "owensong/Inflect-Micro-v3",
+      "summary": "Inflect at a third of the size: 12M parameters and the same six English voices, on the CPU. Speech only, without Mini's vocal events or enhancer.",
+      "license": "Apache-2.0",
+      "released": "2026-11",
+      "size": "0.06 GB",
+      "languages": "English",
+      "voices": [
+        {
+          "id": "cassidy",
+          "name": "Cassidy",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "hope",
+          "name": "Hope",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "sophia",
+          "name": "Sophia",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "mark",
+          "name": "Mark",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "james",
+          "name": "James",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "jasper",
+          "name": "Jasper",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        }
+      ],
+      "voice_default": "cassidy",
+      "note": "English only, and a symbol or emoji stops the take.",
+      "downloads": [
+        {
+          "repo": "owensong/Inflect-Micro-v3",
+          "revision": "077eac5c4f0c719bbb428cd29f06a3cf6c6e8a27",
+          "dir": "{data}/models/inflect-micro"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone, in plain English: no emoji and no symbols."
+      }
+    },
+    {
+      "id": "inflect-atom",
+      "name": "Inflect Atom",
+      "maker": "Owen Song",
+      "kind": "tts",
+      "env": "inflect-atom",
+      "adapter": "inflect_atom",
+      "repo": "owensong/Inflect-Atom-v3",
+      "summary": "The smallest model here by far: 157 thousand learned parameters driving a signal-processing voice instead of a neural vocoder. Six English voices, on the CPU.",
+      "license": "Apache-2.0",
+      "released": "2026-11",
+      "size": "0.02 GB",
+      "languages": "English",
+      "voices": [
+        {
+          "id": "cassidy",
+          "name": "Cassidy",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "hope",
+          "name": "Hope",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "sophia",
+          "name": "Sophia",
+          "group": "English",
+          "detail": "Female",
+          "lang": "en"
+        },
+        {
+          "id": "mark",
+          "name": "Mark",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "james",
+          "name": "James",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        },
+        {
+          "id": "jasper",
+          "name": "Jasper",
+          "group": "English",
+          "detail": "Male",
+          "lang": "en"
+        }
+      ],
+      "voice_default": "cassidy",
+      "note": "English only.",
+      "downloads": [
+        {
+          "repo": "owensong/Inflect-Atom-v3",
+          "revision": "1f06119fd84c0156132382ff7519cdcea6d48e46",
+          "dir": "{data}/models/inflect-atom"
+        }
+      ],
+      "enhance": {
+        "markup": "This model performs no tags or stage directions: never write any. Shape the delivery with punctuation alone, in plain English: no emoji and no symbols."
+      }
+    },
+    {
+      "id": "reverb",
+      "name": "Reverb-TTS",
+      "maker": "Software Mansion AI Labs",
+      "kind": "tts",
+      "env": "reverb",
+      "adapter": "reverb",
+      "repo": "software-mansion/Reverb-TTS",
+      "summary": "A 297M-parameter voice model with 16 presets. A preset or a sampled voice can speak any of its seven languages at 24 kHz.",
+      "license": "CC BY-NC 4.0",
+      "caution": "Non-commercial",
+      "released": "2026-11",
+      "size": "2.1 GB",
+      "languages": "7 languages",
+      "language_options": [
+        {
+          "code": "en",
+          "name": "English"
+        },
+        {
+          "code": "de",
+          "name": "German"
+        },
+        {
+          "code": "fr",
+          "name": "French"
+        },
+        {
+          "code": "es",
+          "name": "Spanish"
+        },
+        {
+          "code": "it",
+          "name": "Italian"
+        },
+        {
+          "code": "pl",
+          "name": "Polish"
+        },
+        {
+          "code": "pt",
+          "name": "Portuguese"
+        }
+      ],
+      "voices": [
+        {
+          "id": "en_female_narrator",
+          "name": "Female narrator",
+          "group": "English",
+          "lang": "en"
+        },
+        {
+          "id": "en_female_whisper",
+          "name": "Female whisper",
+          "group": "English",
+          "lang": "en"
+        },
+        {
+          "id": "en_male_angry",
+          "name": "Male angry",
+          "group": "English",
+          "lang": "en"
+        },
+        {
+          "id": "en_male_narrator_1",
+          "name": "Male narrator 1",
+          "group": "English",
+          "lang": "en"
+        },
+        {
+          "id": "en_male_narrator_2",
+          "name": "Male narrator 2",
+          "group": "English",
+          "lang": "en"
+        },
+        {
+          "id": "de_female_standard",
+          "name": "Female standard",
+          "group": "German",
+          "lang": "de"
+        },
+        {
+          "id": "de_male_standard",
+          "name": "Male standard",
+          "group": "German",
+          "lang": "de"
+        },
+        {
+          "id": "fr_female_standard",
+          "name": "Female standard",
+          "group": "French",
+          "lang": "fr"
+        },
+        {
+          "id": "fr_male_standard",
+          "name": "Male standard",
+          "group": "French",
+          "lang": "fr"
+        },
+        {
+          "id": "es_male_standard_1",
+          "name": "Male standard 1",
+          "group": "Spanish",
+          "lang": "es"
+        },
+        {
+          "id": "es_male_standard_2",
+          "name": "Male standard 2",
+          "group": "Spanish",
+          "lang": "es"
+        },
+        {
+          "id": "it_male_expressive",
+          "name": "Male expressive",
+          "group": "Italian",
+          "lang": "it"
+        },
+        {
+          "id": "it_male_standard",
+          "name": "Male standard",
+          "group": "Italian",
+          "lang": "it"
+        },
+        {
+          "id": "pl_male_standard",
+          "name": "Male standard",
+          "group": "Polish",
+          "lang": "pl"
+        },
+        {
+          "id": "pt_female_standard",
+          "name": "Female standard",
+          "group": "Portuguese",
+          "lang": "pt"
+        },
+        {
+          "id": "pt_male_standard",
+          "name": "Male standard",
+          "group": "Portuguese",
+          "lang": "pt"
+        }
+      ],
+      "voice_default": "en_male_narrator_1",
+      "cloning": "optional",
+      "ref_text": true,
+      "transcriber": {
+        "name": "Whisper Small",
+        "repo": "openai/whisper-small",
+        "revision": "973afd24965f72e36ca33b3055d56a652f456b4d",
+        "allow": [
+          "model.safetensors",
+          "config.json",
+          "generation_config.json",
+          "preprocessor_config.json",
+          "tokenizer.json",
+          "tokenizer_config.json",
+          "special_tokens_map.json",
+          "normalizer.json",
+          "added_tokens.json",
+          "vocab.json",
+          "merges.txt"
+        ]
+      },
+      "note": "For cloning, use 3–10 seconds of clean speech from one speaker. Whisper Small transcribes the sample on this Mac. You can edit the words before speaking.",
+      "downloads": [
+        {
+          "repo": "software-mansion/Reverb-TTS",
+          "revision": "72be799c8fb6d56a206d260b425c48bf3bd5943d",
+          "allow": [
+            "model/safetensors/int8/*",
+            "model/tokenizer*",
+            "model/chat_template.jinja",
+            "voices/*.json"
+          ]
+        },
+        {
+          "repo": "eustlb/higgs-audio-v2-tokenizer",
+          "revision": "0e3a9177c2991016b8e5e17d23aa474ee665bef2",
+          "allow": [
+            "config.json",
+            "model.safetensors",
+            "preprocessor_config.json"
+          ]
+        }
+      ],
+      "enhance": {
+        "markup": "Use plain spoken text and punctuation. Delivery comes from the voice. Leave out tags and stage directions."
+      }
     },
     {
       "id": "kitten",

@@ -3,6 +3,26 @@
     <channel>
         <title>Ventriloquist</title>
         <item>
+            <title>0.2.0</title>
+            <pubDate>Fri, 20 Nov 2026 15:17:54 -0600</pubDate>
+            <link>https://nearbycoder.github.io/Ventriloquist/</link>
+            <sparkle:version>0.2.0</sparkle:version>
+            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description sparkle:format="markdown"><![CDATA[- Reverb-TTS adds 16 preset voices and voice cloning in seven languages. Whisper Small
+  transcribes your voice sample locally. You can edit its words and speak a line in a different language.
+- Three new models: Inflect Mini, Micro and Atom, small English voices that run on the CPU
+  many times faster than real time. Mini plays vocal events written into the line, such as
+  `[laugh]` or `[yawn]`, and can run a take through its 48 kHz enhancer: write 48 kHz in
+  Direction.
+- Ventriloquist can now download signed updates in the background and install them when
+  you quit. This is on by default. Choose **Ventriloquist › Update Settings…** to change it.
+
+]]></description>
+            <enclosure url="https://github.com/nearbycoder/Ventriloquist/releases/download/v0.2.0/Ventriloquist-0.2.0.zip" length="15805126" type="application/octet-stream" sparkle:edSignature="9+XCrRUwx/uGIxUpAImXZ2xRQ7x/91LV1N0D4z21qMvUwTkdFkfHdZ4fg7s2sBonAjnLxehLFcmGaEktieCGCw=="/>
+        </item>
+        <item>
             <title>0.1.1</title>
             <pubDate>Wed, 11 Nov 2026 23:56:54 -0600</pubDate>
             <link>https://nearbycoder.github.io/Ventriloquist/</link>
