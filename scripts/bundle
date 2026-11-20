@@ -7,10 +7,10 @@
 # signing identity ("Developer ID Application: ...") to keep the answer. A bundle signed
 # with an identity also gets the hardened runtime, which notarization requires.
 #
-# --updates makes the bundle one that updates itself: it carries Sparkle and the address of
-# the feed it reads (docs/appcast.xml, as GitHub Pages serves it). scripts/release builds
-# with it. FEED_URL, VERSION and BUNDLE_ID stand in for the real ones when trying an update
-# out against a feed of your own.
+# Installed builds and releases carry Sparkle and read docs/appcast.xml from GitHub Pages.
+# Use --no-updates to keep a development install on your own build, or --updates to include
+# Sparkle in a standalone bundle. FEED_URL, VERSION and BUNDLE_ID can point a test build at
+# a feed of your own.
 set -eu
 cd "$(dirname "$0")/.."
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
@@ -26,15 +26,17 @@ IDENTITY=${SIGN_IDENTITY:--}
 APP="dist/$NAME.app"
 INSTALL=0
 OPEN=0
-UPDATES=0
+UPDATES=auto
 for arg in "$@"; do
   case "$arg" in
     --install) INSTALL=1 ;;
     --open) OPEN=1 ;;
     --updates) UPDATES=1 ;;
-    *) echo "usage: scripts/bundle [--updates] [--install] [--open]" >&2; exit 2 ;;
+    --no-updates) UPDATES=0 ;;
+    *) echo "usage: scripts/bundle [--updates | --no-updates] [--install] [--open]" >&2; exit 2 ;;
   esac
 done
+[ "$UPDATES" != auto ] || UPDATES=$INSTALL
 
 cargo build --release
 BIN=target/release/ventriloquist
@@ -92,7 +94,8 @@ if [ "$UPDATES" = 1 ]; then
   cp -R "$SPARKLE/Sparkle.framework" "$STAGE/Contents/Frameworks/"
   UPDATER="  <key>SUFeedURL</key><string>$FEED_URL</string>
   <key>SUPublicEDKey</key><string>$FEED_KEY</string>
-  <key>SUEnableAutomaticChecks</key><true/>"
+  <key>SUEnableAutomaticChecks</key><true/>
+  <key>SUAutomaticallyUpdate</key><true/>"
 fi
 cat > "$STAGE/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>

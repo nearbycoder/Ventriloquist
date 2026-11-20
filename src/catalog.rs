@@ -114,6 +114,17 @@ pub struct Enhance {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+pub struct Language {
+    pub code: String,
+    pub name: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct Transcriber {
+    pub name: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct Model {
     pub id: String,
     pub name: String,
@@ -132,6 +143,9 @@ pub struct Model {
     pub size: String,
     #[serde(default)]
     pub languages: String,
+    /// Languages the user can explicitly choose for the text and the sample.
+    #[serde(default)]
+    pub language_options: Vec<Language>,
     #[serde(default)]
     pub voices: Vec<Voice>,
     #[serde(default)]
@@ -141,6 +155,8 @@ pub struct Model {
     /// The model also wants the words spoken in the reference clip.
     #[serde(default)]
     pub ref_text: bool,
+    #[serde(default)]
+    pub transcriber: Option<Transcriber>,
     #[serde(default)]
     pub instruct: Instruct,
     /// The direction field's placeholder: what to write there, by example.
@@ -154,6 +170,10 @@ pub struct Model {
 }
 
 impl Model {
+    pub fn language(&self, code: &str) -> Option<&Language> {
+        self.language_options.iter().find(|l| l.code == code)
+    }
+
     /// The download size as a number, for totals.
     pub fn size_gb(&self) -> f64 {
         self.size.split_whitespace().next().and_then(|n| n.parse().ok()).unwrap_or(0.0)

@@ -78,7 +78,9 @@ fn main() {
     let options = WindowOptions { transparent: icon, ..WindowOptions::default() };
     let mut app = rune::App::new(spec).chrome(chrome).window_options(options).standard_menus().on_quit(on_quit);
     if updates::available() {
-        app = app.menu_item(MenuItem::new("Check for Updates…", |_: &mut App, _: &mut Tx| updates::check()));
+        app = app
+            .menu_item(MenuItem::new("Check for Updates…", |_: &mut App, _: &mut Tx| updates::check()))
+            .menu_item(MenuItem::new("Update Settings…", |s: &mut App, _: &mut Tx| s.update_settings_open = true));
     }
     app.run();
 }

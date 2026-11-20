@@ -25,6 +25,9 @@ pub fn view(s: &App, cx: &mut Cx<App>) -> El {
         Page::Bench => (main_pane(s, &k, &mut layer), s.model().kind.title()),
         Page::Models => (models::models(s, &k), "Models"),
     };
+    if s.update_settings_open {
+        update_settings(&k, &mut layer);
+    }
     let toolbar = Toolbar::new().title(title).trailing(engines(s, &k));
     let shell = SplitView::new(main)
         .sidebar(&s.sidebar, |s: &mut App| &mut s.sidebar, sidebar(s, &k))
@@ -38,6 +41,25 @@ pub fn view(s: &App, cx: &mut Cx<App>) -> El {
         .reduced_motion(cx.is_reduced_motion())
         .build(&k);
     rune_kit::root(shell, layer)
+}
+
+fn update_settings(k: &Kit, layer: &mut Vec<El>) {
+    let Some(settings) = crate::updates::UpdateSettings::current() else { return };
+    let check = rune_kit::Checkbox::new(settings.checks())
+        .label("Check for updates daily")
+        .on_toggle(move |_: &mut App| settings.set_checks(!settings.checks()))
+        .build(k);
+    let install = rune_kit::Checkbox::new(settings.installs())
+        .label("Install updates when Ventriloquist quits")
+        .disabled(!settings.checks())
+        .on_toggle(move |_: &mut App| settings.set_installs(!settings.installs()))
+        .build(k);
+    rune_kit::Dialog::new("update-settings", "Update Settings")
+        .open(true)
+        .fit()
+        .on_close(|s: &mut App| s.update_settings_open = false)
+        .child(col().w_full().px(16.0).pb(16.0).gap(10.0).child(check).child(install))
+        .build(k, layer);
 }
 
 /// A rounded tile with the model's initial, tinted by what kind of model it is.
@@ -504,6 +526,7 @@ mod tests {
         assert_eq!(count("kokoro"), 54);
         assert_eq!(count("qwen3-voices"), 9);
         assert_eq!(count("kitten"), 115);
+        assert_eq!(count("reverb"), 16);
         assert_eq!(count("lfm3-tts"), 2);
         assert!(count("phonon") >= 38 && count("ming") >= 200);
         for m in &app.catalog.models {
@@ -511,6 +534,54 @@ mod tests {
                 assert!(!v.preview_text().is_empty());
             }
         }
+    }
+
+    #[test]
+    fn reverb_can_speak_in_a_different_language_from_its_sample() {
+        use crate::state::Slot;
+        let mut app = ready();
+        let reverb = app.catalog.index("reverb").unwrap();
+        app.select(reverb);
+        let mut rt = window(app);
+        assert!(rt.find("sample-language-trigger").is_none());
+        click(&mut rt, "text-language-trigger");
+        click(&mut rt, "option3"); // French
+        click(&mut rt, "go");
+        let preset = rt.state.takes.last().unwrap();
+        assert_eq!(preset.voice.as_deref(), Some("en_male_narrator_1"));
+        assert_eq!(preset.language.as_deref(), Some("fr"));
+
+        rt.state.take_to_slot(preset.id, Slot::Reference);
+        assert_eq!(rt.state.ref_language, "fr");
+        assert_eq!(rt.state.ref_text.text, rt.state.text.text);
+        rt.state.ref_text.replace_text("  ");
+        assert!(rt.state.blocked(reverb).is_none(), "a blank transcript can be filled by the worker");
+        rt.invalidate();
+        rt.frame(1.0 / 60.0);
+        click(&mut rt, "sample-language-trigger");
+        click(&mut rt, "option1"); // German
+        assert!(rt.state.transcription_status().is_some());
+        for _ in 0..30 {
+            rt.frame(1.0 / 60.0);
+        }
+        click(&mut rt, "ref-text");
+        assert!(rt.state.ref_text.focused, "the transcript field takes keyboard focus");
+        for ch in "Guten Morgen.".chars() {
+            rt.key(rune::KeyEvent { key: rune::Key::Text(ch.to_string()), mods: rune::Mods::default() });
+        }
+        rt.frame(1.0 / 60.0);
+        assert_eq!(rt.state.ref_text.text.trim(), "Guten Morgen.");
+        assert!(rt.state.transcription_status().is_none(), "typing takes over from Whisper");
+        rt.state.text.replace_text("Bonjour.");
+        rt.state.generate();
+        let sampled = rt.state.takes.last().unwrap();
+        assert!(sampled.voice.is_none() && sampled.reference.is_some());
+        assert_eq!(sampled.ref_text, "Guten Morgen.");
+        assert_eq!((sampled.language.as_deref(), sampled.ref_language.as_deref()), (Some("fr"), Some("de")));
+
+        rt.state.clear_clip(Slot::Reference);
+        assert!(rt.state.ref_text.text.is_empty());
+        assert!(rt.state.blocked(reverb).is_none());
     }
 
     #[test]

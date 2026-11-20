@@ -11,6 +11,8 @@ its start-up.
               "text": "...", "instruct": "", "preprompt": "standing instructions"}
              {"op": "scene", "id": 10, "model": "enhancer", "target": "drama3",
               "text": "what happens in the scene", "length": "short", "preprompt": ""}
+             {"op": "transcribe", "id": 11, "model": "reverb", "ref_audio": "sample.wav",
+              "ref_language": "pl"}
     events   {"event": "status", "id": 7, "message": "Loading Kokoro"}
              {"event": "done", "id": 7, "gen_seconds": 0.4, "load_seconds": 2.1,
               "audio_seconds": 8.6, "sample_rate": 24000, "peak_gb": 1.2, "text": ""}
@@ -27,6 +29,7 @@ import sys
 import time
 import traceback
 import wave
+from functools import lru_cache
 from pathlib import Path
 
 # The protocol keeps the real stdout; anything else that prints lands on stderr.
@@ -870,6 +873,242 @@ class Kitten:
         return audio, self.model.sample_rate, ""
 
 
+# ----- Reverb-TTS (PyTorch on Metal) -----
+
+
+class WhisperSmall:
+    def __init__(self, download, status):
+        import torch
+        from huggingface_hub import snapshot_download
+        from huggingface_hub.errors import LocalEntryNotFoundError
+        from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
+        files = download["allow"]
+        # An older Reverb install has no transcriber. A shared cache may also have just
+        # the weights, without the tokenizer. Fetch missing files once in either case.
+        for local_only in (True, False):
+            if not local_only:
+                status(f"Downloading {download['name']}")
+            try:
+                root = Path(snapshot_download(download["repo"], revision=download["revision"], allow_patterns=files, local_files_only=local_only))
+            except LocalEntryNotFoundError:
+                continue
+            if all((root / name).is_file() for name in files):
+                break
+        else:
+            raise RuntimeError("Whisper Small needs a one-time download. Connect and retry, or enter the words in the sample.")
+        status(f"Loading {download['name']}")
+        device = torch_device()
+        dtype = torch.float16 if device == "mps" else torch.float32
+        self.processor = WhisperProcessor.from_pretrained(root, local_files_only=True)
+        self.model = WhisperForConditionalGeneration.from_pretrained(root, dtype=dtype, local_files_only=True).to(device).eval()
+
+    @lru_cache(maxsize=8)
+    def transcribe(self, path, language, _mtime_ns, _size):
+        """Key the result by file version and sample language so queued takes can reuse it."""
+        import torch
+        from reverb_tts.audio import load_audio
+
+        extractor = self.processor.feature_extractor
+        audio = load_audio(path, None, extractor.sampling_rate)
+        no_words = "No speech found in the sample. Enter its words or choose another recording."
+        if not audio.numel() or audio.abs().max().item() < 1e-5:
+            raise ValueError(no_words)
+        inputs = self.processor(
+            audio.numpy(), sampling_rate=extractor.sampling_rate, return_tensors="pt",
+            return_attention_mask=True, truncation=False, padding="max_length",
+        )
+        with torch.inference_mode():
+            tokens = self.model.generate(
+                **inputs.to(device=self.model.device, dtype=self.model.dtype),
+                language=language, task="transcribe", return_timestamps=audio.numel() > extractor.n_samples,
+            )
+        text = self.processor.decode(tokens[0], skip_special_tokens=True).strip()
+        if not text:
+            raise ValueError(no_words)
+        return text
+
+
+def transcribe_reference(spec, req, status):
+    path = Path(req["ref_audio"])
+    stamp = path.stat()
+    download = spec["transcriber"]
+    key = download["repo"]
+    if key not in LOADED:
+        LOADED[key] = WhisperSmall(download, status)
+    status("Transcribing the voice sample")
+    return LOADED[key].transcribe(path, req.get("ref_language") or "en", stamp.st_mtime_ns, stamp.st_size)
+
+
+class Reverb:
+    def __init__(self, spec):
+        from huggingface_hub import snapshot_download
+        from reverb_tts import TTS
+
+        # Passing the installed folders also makes preset_voice read its list locally.
+        weights, codec = [
+            snapshot_download(download["repo"], revision=download["revision"], allow_patterns=download["allow"], local_files_only=True)
+            for download in spec["downloads"]
+        ]
+        self.model = TTS.from_pretrained(weights, variant="int8", codec=codec)
+        self.default = spec["voice_default"]
+
+    def run(self, req, status):
+        if req.get("ref_audio"):
+            status("Encoding the voice sample")
+            voice = self.model.voice(req["ref_audio"], req["ref_text"].strip(), language=req.get("ref_language") or "en")
+        else:
+            voice = self.model.preset_voice(req.get("voice") or self.default)
+        status("Generating")
+        audio = self.model.generate(req["text"], voice, language=req.get("language") or voice.language)
+        return audio, self.model.sample_rate, ""
+
+
+# ----- Inflect v3 (PyTorch on the CPU, from each model's own package) -----
+
+
+class Inflect:
+    """What the three Inflect models share. Each one ships as a folder holding its weights and
+    the code that runs them, and checks every file against a manifest before it loads any.
+    Those checks refuse symbolic links, which is what a Hugging Face cache is made of, so
+    `setup.py` downloads the folder into the app's data folder instead. The packages are
+    written as command-line tools; this loads the same pieces once and keeps them.
+
+    They run on the CPU: it is the only device they support besides CUDA.
+    """
+
+    cpu = True
+
+    def __init__(self, spec):
+        # The data folder is two levels above the environment (`envs/<name>`).
+        data = Path(sys.prefix).parents[1]
+        self.root = Path(spec["downloads"][0]["dir"].replace("{data}", str(data))).resolve()
+        if not self.root.is_dir():
+            raise RuntimeError(f"{spec['name']} isn't downloaded. Install it from the Models page.")
+        self.default = spec.get("voice_default")
+        short_espeak_data()
+        self.load()
+        import torch
+
+        # The packages ask for two threads, a setting for a small machine.
+        torch.set_num_threads(min(8, os.cpu_count() or 2))
+
+    @staticmethod
+    def module(path, name):
+        """Imports one of the package's files under a name of its own."""
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(name, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
+        return module
+
+    def run(self, req, status):
+        import random
+
+        voice = req.get("voice") or self.default
+        status("Generating")
+        try:
+            # A new seed each time, so a second take is a second performance.
+            audio, sample_rate = self.speak(req["text"], voice, random.randrange(2**31), req)
+        except ValueError as error:
+            # The packages validate their input and say little about it.
+            reason = str(error)
+            if reason.startswith("Unsupported"):
+                raise RuntimeError(f"Inflect reads English only, in plain letters, digits and everyday punctuation. {reason} in this text.") from error
+            if "event tag" in reason or "Word-internal tag" in reason or "Malformed markup" in reason:
+                raise RuntimeError(f"{reason}. The events are [laugh] [sigh] [gasp] [cough] [yawn] [inhale] [exhale] [clear_throat], each with a space either side.") from error
+            raise
+        return audio, sample_rate, ""
+
+
+class InflectMini(Inflect):
+    """Inflect Mini, through its event component: that speaks plain text exactly as the speech
+    command does, and plays a vocal event wherever the text has a tag. The 48 kHz enhancer is
+    a separate small model applied to plain speech only, as in the package's own commands.
+    """
+
+    TAG = re.compile(r"\[[^\]\r\n]*\]|</?[A-Za-z][^>\r\n]*>")
+    # The most tags the event component takes in one request.
+    TAGS_PER_REQUEST = 4
+
+    def load(self):
+        events = self.module(self.root / "extras/events/command.py", "_inflect_events")
+        self.voice = events.load(self.root)
+        # The speech model inside it, for the enhanced path.
+        self.speech = self.voice.base.speech
+        self.enhancer = None
+
+    def requests(self, text):
+        """The text in pieces of at most four tags each, cut after a tag."""
+        tags = list(self.TAG.finditer(text))
+        cuts = [tags[i].end() for i in range(self.TAGS_PER_REQUEST - 1, len(tags) - 1, self.TAGS_PER_REQUEST)]
+        pieces = [text[a:b] for a, b in zip([0] + cuts, cuts + [len(text)])]
+        # What is left after the last cut may be a full stop and nothing to say.
+        return [piece for piece in pieces if self.TAG.search(piece) or any(c.isalnum() for c in piece)]
+
+    def enhanced(self, text, voice, seed):
+        import io
+
+        import soundfile
+
+        if self.enhancer is None:
+            selected = self.module(self.root / "core/selected_mini.py", "_inflect_selected")
+            self.enhancer = selected.Native48Enhancer(self.root / "core", "cpu")
+        speech = self.speech
+        prepared = speech.numeric.prepare_text(text, speech.numbers, "conservative")
+        raw, _ = speech.cli.render(prepared, voice, speech.runtime, self.enhancer, seed, "FLOAT")
+        return soundfile.read(io.BytesIO(raw), dtype="float32")
+
+    def speak(self, text, voice, seed, req):
+        import numpy as np
+
+        tagged = any(c in text for c in "[]<>")
+        if not tagged and "48" in (req.get("instruct") or ""):
+            return self.enhanced(text, voice, seed)
+        audio = []
+        for piece in self.requests(text) if tagged else [text]:
+            if audio:
+                audio.append(np.zeros(int(0.12 * 24000), dtype=np.float32))
+            audio.append(self.voice.synthesize(piece, voice=voice, seed=seed, events=True)["audio"].detach().cpu().numpy())
+        if not audio:
+            raise RuntimeError("There are no words to speak.")
+        return np.concatenate(audio), 24000
+
+
+class InflectMicro(Inflect):
+    def load(self):
+        self.cli = self.module(self.root / "synthesize.py", "_inflect_micro")
+        self.cli.verify_candidate(self.root)
+        self.runtime = self.cli.load_runtime(self.root, "micro", "cpu")
+        self.numbers = self.cli.load_numeric(self.root)
+
+    def speak(self, text, voice, seed, req):
+        import io
+
+        import soundfile
+
+        prepared = self.cli.prepare_text(text, self.numbers, "conservative")
+        raw, _ = self.cli.render_prepared(prepared, voice, self.runtime, seed)
+        return soundfile.read(io.BytesIO(raw), dtype="float32")
+
+
+class InflectAtom(Inflect):
+    def load(self):
+        cli = self.module(self.root / "atom_preview_cli_20261024.py", "_inflect_atom")
+        cli.verify_manifest(self.root)
+        # The front-end the package uses by default, loaded under the names it imports by.
+        cli._flat_import(self.root, "native_mini_text.py", "native_mini_text")
+        frontend = cli._flat_import(self.root, "native_mini_text_espeak.py", "native_mini_text_espeak").make_offline_misaki()
+        runtime = cli._flat_import(self.root, "atom_runtime_20261024.py", "_inflect_atom_runtime")
+        self.model = runtime.AtomRuntime(self.root / "export.pt", self.root / "vocab.json", device="cpu", g2p=frontend, dsp_backend="torch")
+
+    def speak(self, text, voice, seed, req):
+        result = self.model.synthesize_text(text, voice, seed=seed)
+        return result["audio"].detach().cpu().numpy(), result["sample_rate"]
+
+
 # ----- PyTorch on Metal (voice conversion) -----
 
 
@@ -932,14 +1171,20 @@ class CoquiVc:
         return wav, self.model.voice_converter.output_sample_rate, ""
 
 
-ADAPTERS = {"mlx_tts": MlxTts, "mlx_sts": MlxSts, "sophon_talker": SophonTalker, "sophon": Sophon, "lfm_audio": LfmAudio, "zonos": Zonos, "llm": Llm, "kitten": Kitten, "chatterbox_vc": ChatterboxVc, "seed_vc": SeedVc, "coqui_vc": CoquiVc}
+ADAPTERS = {"mlx_tts": MlxTts, "mlx_sts": MlxSts, "sophon_talker": SophonTalker, "sophon": Sophon, "lfm_audio": LfmAudio, "zonos": Zonos, "llm": Llm, "kitten": Kitten, "reverb": Reverb, "inflect_mini": InflectMini, "inflect_micro": InflectMicro, "inflect_atom": InflectAtom, "chatterbox_vc": ChatterboxVc, "seed_vc": SeedVc, "coqui_vc": CoquiVc}
 LOADED = {}
 
 
-def peak_memory_gb(reset=False):
+def peak_memory_gb(reset=False, cpu=False):
     """The most memory the run held on the GPU. MLX tracks a true peak; PyTorch's Metal
-    backend only says what it holds now, which after a run is close to it."""
+    backend only says what it holds now, which after a run is close to it. A model on the CPU
+    holds none there, so it reports the most the whole worker has held."""
     try:
+        if cpu:
+            import resource
+
+            # In bytes on macOS.
+            return 0.0 if reset else resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e9
         if "mlx.core" in sys.modules:
             import mlx.core as mx
 
@@ -964,6 +1209,11 @@ def handle(req):
     def status(message):
         emit("status", id=request_id, message=message)
 
+    if req.get("op") == "transcribe":
+        transcript = transcribe_reference(spec, req, status)
+        emit("done", id=request_id, text=transcript)
+        return
+
     load_seconds = 0.0
     if spec["id"] not in LOADED:
         status(f"Loading {spec['name']}")
@@ -987,6 +1237,10 @@ def handle(req):
         return
     peak_memory_gb(reset=True)
     started = time.perf_counter()
+    extra = {}
+    if spec.get("transcriber") and req.get("ref_audio") and not (req.get("ref_text") or "").strip():
+        req["ref_text"] = transcribe_reference(spec, req, status)
+        extra["ref_text"] = req["ref_text"]
     # A model that called a tool says so in a fourth value.
     audio, sample_rate, text, *more = LOADED[spec["id"]].run(req, status)
     gen_seconds = time.perf_counter() - started
@@ -998,9 +1252,10 @@ def handle(req):
         load_seconds=load_seconds,
         audio_seconds=audio_seconds,
         sample_rate=int(sample_rate),
-        peak_gb=peak_memory_gb(),
+        peak_gb=peak_memory_gb(cpu=getattr(LOADED[spec["id"]], "cpu", False)),
         text=text,
         tool=more[0] if more else "",
+        **extra,
     )
 
 

@@ -2,6 +2,7 @@
 """Runs one model from a terminal, through the same worker the app uses.
 
     scripts/try-model kokoro "Hello there."
+    scripts/try-model reverb "Dzień dobry!" --voice en_male_narrator_1 --language pl
     scripts/try-model qwen3-clone "Hello." --ref voice.wav
     scripts/try-model chatterbox-vc --source speech.wav --ref voice.wav
     scripts/try-model voicechat --source question.wav
@@ -30,8 +31,10 @@ def main():
     parser.add_argument("model", choices=sorted(MODELS))
     parser.add_argument("text", nargs="?", default="The puppet never knew whose voice it was.")
     parser.add_argument("--voice")
+    parser.add_argument("--language", help="text language for Reverb (defaults to the voice's language)")
     parser.add_argument("--ref", help="voice sample to imitate")
-    parser.add_argument("--ref-text", default="")
+    parser.add_argument("--ref-text", default="", help="exact words in the sample (Reverb transcribes it locally when omitted)")
+    parser.add_argument("--ref-language", help="language spoken in the Reverb sample (defaults to en)")
     parser.add_argument("--instruct", default="")
     parser.add_argument("--source", help="speech to convert or answer")
     parser.add_argument("--out", help="where to write the wav")
@@ -71,8 +74,10 @@ def main():
             "model": args.model,
             "text": args.text,
             "voice": args.voice or model.get("voice_default"),
+            "language": args.language,
             "ref_audio": os.path.abspath(args.ref) if args.ref else None,
             "ref_text": args.ref_text,
+            "ref_language": args.ref_language,
             "instruct": args.instruct,
             "source_audio": os.path.abspath(args.source) if args.source else None,
             "out": out,

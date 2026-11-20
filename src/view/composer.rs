@@ -1,11 +1,11 @@
 //! What goes into a run: the words, the voice, the clips, and the button that starts it.
 
 use rune::{El, FileDialogOptions, Icon, Tx, col, el, icon, row, text};
-use rune_kit::{Button, ButtonVariant, ControlSize, IconButton, IconButtonVariant, Kit, Loader, Placement, Popover, SegmentedControl, TextArea, TextInput, glyphs};
+use rune_kit::{Button, ButtonVariant, ControlSize, IconButton, IconButtonVariant, Kit, Loader, Placement, Popover, SegmentedControl, Select, TextArea, TextInput, glyphs};
 
 use super::{icons, quiet, takes::waveform, voices};
 use crate::catalog::{Cloning, Instruct, Kind};
-use crate::state::{AUDIO_EXTENSIONS, App, PlayKey, Slot, clock, is_run_key};
+use crate::state::{AUDIO_EXTENSIONS, App, LanguageField, PlayKey, Slot, clock, is_run_key};
 use crate::theme;
 
 fn choose_file(slot: Slot) -> impl Fn(&mut App, &mut Tx) {
@@ -308,6 +308,33 @@ fn enhance(s: &App, k: &Kit, layer: &mut Vec<El>) -> El {
     group
 }
 
+fn language_picker(s: &App, field: LanguageField, k: &Kit, layer: &mut Vec<El>) -> El {
+    let m = s.model();
+    let mut names: Vec<&str> = m.language_options.iter().map(|l| l.name.as_str()).collect();
+    let (key, label, current) = match field {
+        LanguageField::Text => {
+            names.insert(0, "Match voice");
+            ("text-language", "Text language", m.language(&s.language).map_or("Match voice", |l| l.name.as_str()))
+        }
+        LanguageField::Sample => ("sample-language", "Sample language", m.language(&s.ref_language).map_or("English", |l| l.name.as_str())),
+    };
+    let select = Select::new(key, &names)
+        .label(label)
+        .current(Some(current))
+        .open(s.language_menu == Some(field))
+        .on_toggle(move |s: &mut App| s.language_menu = (s.language_menu != Some(field)).then_some(field))
+        .on_close(|s: &mut App| s.language_menu = None)
+        .on_choose(move |s: &mut App, name, _| {
+            let code = s.model().language_options.iter().find(|l| l.name == name).map(|l| l.code.clone()).unwrap_or_default();
+            match field {
+                LanguageField::Text => s.language = code,
+                LanguageField::Sample => s.set_sample_language(code),
+            }
+            s.language_menu = None;
+        });
+    row().items_center().gap(4.0).child(text(label).font(k.ty.small).color(k.c.text_muted)).child(select.build(k, layer))
+}
+
 pub fn composer(s: &App, k: &Kit, layer: &mut Vec<El>) -> El {
     let (c, m) = (&k.c, s.model());
     let mut body = col().key("composer").w_full().gap(10.0);
@@ -351,16 +378,29 @@ pub fn composer(s: &App, k: &Kit, layer: &mut Vec<El>) -> El {
                 };
                 body = body.child(clip_slot(s, Slot::Reference, "Voice sample", hint, &icons::VOICE, k));
                 if m.ref_text && s.reference.is_some() {
-                    body = body.child(
-                        TextInput::new(&s.ref_text)
-                            .label("Words spoken in the sample")
-                            .placeholder("What the voice sample says, word for word (helps this model match it)")
-                            .width(None)
-                            .on_edit(|s: &mut App| &mut s.ref_text)
-                            .build(k)
-                            .key("ref-text"),
-                    );
+                    let input = TextInput::new(&s.ref_text)
+                        .label("Words spoken in the sample")
+                        .placeholder(s.transcription_status().unwrap_or("What the voice sample says, word for word"))
+                        .width(None)
+                        .on_edit(|s: &mut App| &mut s.ref_text)
+                        .on_change(|s: &mut App, _| s.transcript_edited())
+                        .build(k)
+                        .key("ref-text");
+                    let mut field = row().w_full().items_center().gap(8.0).child(el().grow(1.0).min_w(0.0).child(input));
+                    if s.transcription_status().is_some() {
+                        field = field.child(Loader::new().size(14.0).build(k));
+                    } else if m.transcriber.is_some() && s.ref_text.text.trim().is_empty() {
+                        field = field.child(Button::new("Transcribe").variant(ButtonVariant::Ghost).on_press(|s: &mut App| s.transcribe_reference()).build(k).key("transcribe"));
+                    }
+                    body = body.child(field);
                 }
+            }
+            if !m.language_options.is_empty() {
+                let mut languages = row().items_center().gap(16.0).child(language_picker(s, LanguageField::Text, k, layer));
+                if m.cloning != Cloning::None && s.reference.is_some() {
+                    languages = languages.child(language_picker(s, LanguageField::Sample, k, layer));
+                }
+                body = body.child(languages);
             }
             if m.instruct != Instruct::None {
                 body = body.child(

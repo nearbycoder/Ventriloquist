@@ -30,7 +30,7 @@ DOWNLOAD = """
 import sys, json
 from huggingface_hub import snapshot_download
 spec = json.loads(sys.argv[1])
-path = snapshot_download(spec["repo"], revision=spec.get("revision"), allow_patterns=spec.get("allow"), ignore_patterns=spec.get("ignore"))
+path = snapshot_download(spec["repo"], revision=spec.get("revision"), allow_patterns=spec.get("allow"), ignore_patterns=spec.get("ignore"), local_dir=spec.get("dir"))
 print("  in", path)
 """
 
@@ -123,13 +123,23 @@ def ensure_env(uv, data, name):
         return python
 
 
+def downloads(model):
+    weights = model.get("downloads", [])
+    return [*weights, model["transcriber"]] if "transcriber" in model else weights
+
+
 def install(uv, data, model_id):
     model = MODELS[model_id]
     started = time.time()
     say(f"Installing {model['name']}")
     python = ensure_env(uv, data, model["env"])
-    for spec in model.get("downloads", []):
+    for spec in downloads(model):
         say(f"Downloading {spec['repo']}")
+        # A download with a `dir` is a package that has to sit in a folder of real files (it
+        # checks itself, and refuses the links a Hugging Face cache is made of), so it goes
+        # into the data folder and not the shared cache.
+        if "dir" in spec:
+            spec = {**spec, "dir": spec["dir"].replace("{data}", str(data))}
         run([python, "-c", DOWNLOAD, json.dumps(spec)])
     say(f"Loading {model['name']} once to check it")
     run([python, HERE / "worker.py", "--prepare", model_id], env={**os.environ, "TOKENIZERS_PARALLELISM": "false", "PYTORCH_ENABLE_MPS_FALLBACK": "1"})
@@ -154,17 +164,17 @@ def remove(data, model_id):
     # The marker goes first: from here on the app no longer offers the model.
     (data / "installed" / f"{model_id}.json").unlink(missing_ok=True)
     remaining = installed_models(data)
-    shared = {spec["repo"] for other in remaining for spec in MODELS[other].get("downloads", [])}
+    shared = {spec["repo"] for other in remaining for spec in downloads(MODELS[other])}
     # A repository marked `keep` belongs to other apps too (Figment uses the enhancer's model),
     # so removing the model here leaves its weights in the shared cache.
-    repos = [spec["repo"] for spec in model.get("downloads", []) if spec["repo"] not in shared and not spec.get("keep")]
+    repos = [spec["repo"] for spec in downloads(model) if spec["repo"] not in shared and not spec.get("keep")]
     if repos and python.is_file():
         say(f"Deleting {', '.join(repos)}")
         run([python, "-c", DELETE, json.dumps(repos)])
     # A few models keep weights outside the Hugging Face cache. Only folders the app's own
     # libraries made are ever deleted: inside the data folder, or coqui-tts's model store.
     allowed = [data.resolve(), (Path.home() / "Library/Application Support/tts").resolve()]
-    for entry in model.get("files", []):
+    for entry in model.get("files", []) + [spec["dir"] for spec in downloads(model) if "dir" in spec]:
         path = Path(entry.replace("{data}", str(data))).expanduser().resolve()
         if path.is_dir() and any(root in path.parents for root in allowed):
             say(f"Deleting {path}")

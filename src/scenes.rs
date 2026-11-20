@@ -11,6 +11,7 @@ pub const SCENES: &[(&str, fn(&mut App))] = &[
     ("installing", installing),
     ("takes", takes),
     ("convert", convert),
+    ("reverb", reverb),
     ("failed", failed),
     ("direct", direct),
     ("enhanced", enhanced),
@@ -65,8 +66,10 @@ fn take(s: &App, id: u64, model: usize, gen_seconds: f64, audio_seconds: f64, lo
         kind: m.kind,
         text: if m.kind == Kind::Tts { s.text.text.clone() } else { String::new() },
         voice: m.voice_default.clone(),
+        language: None,
         reference: None,
         ref_text: String::new(),
+        ref_language: None,
         instruct: String::new(),
         source: None,
         reply: String::new(),
@@ -118,6 +121,17 @@ fn convert(s: &mut App) {
     s.reference = Some(clip("Recording, 0:08", 8.0, 5.0));
     let t = take(s, 1, s.selected, 2.4, 14.0, 7.3, 4.6);
     s.takes.push(t);
+}
+
+fn reverb(s: &mut App) {
+    for id in ["kokoro", "inflect-mini", "reverb", "seed-vc"] {
+        s.install[s.catalog.index(id).unwrap()] = Install::Ready;
+    }
+    s.select(s.catalog.index("reverb").unwrap());
+    s.reference = Some(Clip { path: "/tmp/station.wav".into(), name: "Station sample.wav".into(), seconds: Some(4.8), peaks: peaks(CLIP_PEAKS, 5.0) });
+    s.ref_text.replace_text("On Saturday mornings, I take the train into town.");
+    s.language = "fr".into();
+    s.text.replace_text("Le prochain train pour Lyon partira du quai numéro trois.");
 }
 
 fn failed(s: &mut App) {

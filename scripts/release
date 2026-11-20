@@ -1,8 +1,8 @@
 #!/bin/sh
 # Cuts a release of the version in Cargo.toml: builds and signs the app, has Apple notarize
 # it, makes the installer, publishes both on GitHub and adds the version to the feed that
-# installed copies read (docs/appcast.xml, served by GitHub Pages). Copies in the field then
-# offer the update within a day, or at once from Ventriloquist > Check for Updates.
+# installed copies read (docs/appcast.xml, served by GitHub Pages). Copies in the field
+# check daily, or at once from Ventriloquist > Check for Updates.
 #
 # Before running it: set the new version in Cargo.toml, describe it under a "## <version>"
 # heading in CHANGELOG.md, and commit. It needs, once per Mac:

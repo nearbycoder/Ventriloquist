@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ventriloquist: open voice models, side by side, on your Mac</title>
-<meta name="description" content="A native Mac app for trying open-source text-to-speech, voice cloning, voice conversion and spoken conversation models. Everything runs on your Mac, and each model downloads only when you ask for it.">
+<meta name="description" content="Compare open voice models on your Mac. Clone a voice across seven languages with Reverb-TTS, transcribe samples locally with Whisper Small, or try the compact Inflect voices.">
 <meta property="og:title" content="Ventriloquist">
-<meta property="og:description" content="Open voice models, side by side, on your Mac.">
+<meta property="og:description" content="Compare open voice models on your Mac, including Reverb-TTS with local Whisper transcription and the Inflect family.">
 <meta property="og:image" content="https://nearbycoder.github.io/Ventriloquist/assets/takes-dark.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -100,6 +100,7 @@
   .section-lede { color: var(--ink-soft); max-width: 40em; margin: 18px 0 0; text-wrap: pretty; }
   .feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 56px; align-items: center; }
   .feature + .feature { margin-top: 112px; }
+  .feature[id] { scroll-margin-top: 80px; }
   .feature.flip { grid-template-columns: minmax(0, 8fr) minmax(0, 5fr); }
   .feature.flip > .words { order: 2; }
   .feature h3 { font: 700 clamp(24px, 2.8vw, 32px)/1.15 var(--display); letter-spacing: -0.025em; margin: 0; text-wrap: balance; }
@@ -172,7 +173,7 @@
       <a href="#install">Install</a>
       <a href="https://github.com/nearbycoder/Ventriloquist">GitHub</a>
     </nav>
-    <a class="button primary small" data-download href="https://github.com/nearbycoder/Ventriloquist/releases/latest">Download</a>
+    <a class="button primary small" href="https://github.com/nearbycoder/Ventriloquist/releases/latest/download/Ventriloquist.dmg">Download</a>
   </div>
 </header>
 
@@ -182,13 +183,13 @@
       <div>
         <p class="eyebrow">Open voice models, on your Mac</p>
         <h1>Type a line. Hear every model say it.</h1>
-        <p class="lede">Ventriloquist is a native Mac app for trying open-source voice models side by side: text to speech, voice cloning, voice conversion and spoken conversation. Everything runs on your Mac, and nothing leaves it.</p>
+        <p class="lede">Hear open voice models read the same line. Clone a voice from a short sample, re-voice a recording, or ask a spoken question. Your text and audio stay on your Mac.</p>
         <div class="actions">
-          <a class="button primary" data-download href="https://github.com/nearbycoder/Ventriloquist/releases/latest">
+          <a class="button primary" href="https://github.com/nearbycoder/Ventriloquist/releases/latest/download/Ventriloquist.dmg">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.75 7.5 8 10.75 11.25 7.5M3 13.25h10"/></svg>
-            <span data-download-label>Download for Mac</span>
+            <span>Download for Mac</span>
           </a>
-          <a class="button quiet" href="https://github.com/nearbycoder/Ventriloquist">View the source</a>
+          <a class="button quiet" href="#reverb">Explore Reverb-TTS</a>
         </div>
         <p class="fine" data-download-fine>Free and open source. Requires a Mac with Apple silicon.</p>
       </div>
@@ -215,21 +216,17 @@
 
   <section id="bench">
     <div class="wrap">
-      <div class="feature">
+      <div class="feature" id="reverb">
         <div class="words">
-          <p class="kicker">Voice to voice</p>
-          <h3>Clone a voice from a few seconds, or re-voice a whole recording</h3>
-          <p>Cloning models take a short sample. Conversion models keep the words and timing of a recording and change who is saying them. Use your own voice, or one you have permission to use.</p>
-          <ul>
-            <li>Record in the app or drop in a file</li>
-            <li>Built-in voices for each model, with a preview before you commit</li>
-            <li>Time to make, speed against real time and peak memory on every take</li>
-          </ul>
+          <p class="kicker">Reverb-TTS</p>
+          <h3>Record in one language. Speak in another.</h3>
+          <p>Record or drop in 3–10 seconds of clear speech. Whisper Small transcribes the sample on your Mac. Edit any words it missed, then enter a new line in any of Reverb’s seven languages.</p>
+          <p>You can also start with one of 16 preset voices. For cloning, use your own voice or one you have permission to use. Reverb’s weights are licensed for non-commercial use.</p>
         </div>
         <div class="shot">
           <picture>
-            <source srcset="assets/convert-light.png" media="(prefers-color-scheme: light)">
-            <img src="assets/convert-dark.png" width="2240" height="1520" loading="lazy" alt="Voice conversion: a recording and a target voice, converted by Seed-VC.">
+            <source srcset="assets/reverb-light.png" media="(prefers-color-scheme: light)">
+            <img src="assets/reverb-dark.png" width="2240" height="1520" loading="lazy" alt="Reverb-TTS with an English voice sample, its editable transcript and a new line to speak in French.">
           </picture>
         </div>
       </div>
@@ -237,8 +234,8 @@
       <div class="feature flip">
         <div class="words">
           <p class="kicker">Download on demand</p>
-          <h3>Nothing is bundled. You choose what to fetch.</h3>
-          <p>The app itself is a few megabytes. Each model comes from Hugging Face when you ask for it, into its own environment, and leaves cleanly when you remove it. The Models page shows what each one weighs before you start.</p>
+          <h3>Choose what to download</h3>
+          <p>The Models page shows the size and licence of every download. For a small English voice, try Inflect Mini, Micro or Atom. All three run on the CPU. Mini can laugh or yawn when you write the cue into a line.</p>
         </div>
         <div class="shot">
           <picture>
@@ -301,12 +298,12 @@
     <div class="wrap">
       <h2>Install</h2>
       <ol class="steps">
-        <li><h3>Download the installer</h3><p>A signed disk image, checked by Apple, so it opens without a warning.</p></li>
+        <li><h3>Download the installer</h3><p>The notarized disk image for Apple silicon includes Ventriloquist and its built-in updater.</p></li>
         <li><h3>Drag it to Applications</h3><p>Open the image and drop Ventriloquist on the Applications folder beside it.</p></li>
         <li><h3>Pick your models</h3><p>Open the Models page and download the ones you want to hear. Start small: Kokoro is 0.7 GB.</p></li>
       </ol>
       <div class="notes">
-        <div><h3>Updates</h3><p>The app checks for a new version once a day and offers it with its release notes. You can also ask from the menu: <code>Ventriloquist &rsaquo; Check for Updates</code>.</p></div>
+        <div><h3>Automatic updates</h3><p>Ventriloquist checks daily, downloads signed updates and installs them when you quit. Choose <code>Ventriloquist &rsaquo; Update Settings…</code> to change this, or <code>Check for Updates…</code> to update now.</p></div>
         <div><h3>What it needs</h3><p>A Mac with Apple silicon, plus <a href="https://docs.astral.sh/uv/">uv</a> and git for setting up model environments. Small models run in a few gigabytes of memory; the largest want far more, and the catalog says how much each downloads.</p></div>
         <div><h3>Privacy</h3><p>Text, recordings and generated audio stay on your Mac. The network is used to download models and to check for updates.</p></div>
         <div><h3>Build it yourself</h3><p>It is a Rust app on <a href="https://github.com/anomalyco/rune">Rune</a>. Clone the repository and run <code>scripts/bundle --install</code>.</p></div>
@@ -327,20 +324,13 @@
 <script>
   const REPO = "nearbycoder/Ventriloquist";
 
-  // The download buttons lead to the releases page until a release with an installer exists;
-  // then they fetch the installer itself and say which version it is.
+  // GitHub resolves the download link. The API adds the version and size when available.
   fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
     .then((response) => (response.ok ? response.json() : null))
     .then((release) => {
       const installer = release?.assets?.find((asset) => asset.name === "Ventriloquist.dmg");
+      if (!installer) return;
       const fine = document.querySelector("[data-download-fine]");
-      if (!installer) {
-        document.querySelectorAll("[data-download]").forEach((a) => (a.href = `https://github.com/${REPO}#build`));
-        document.querySelector("[data-download-label]").textContent = "Build from source";
-        fine.textContent = "The first signed release is being prepared. Until then it builds from source in a couple of minutes. Requires a Mac with Apple silicon.";
-        return;
-      }
-      document.querySelectorAll("[data-download]").forEach((a) => (a.href = installer.browser_download_url));
       const megabytes = Math.round(installer.size / 1e6);
       fine.textContent = `Version ${release.tag_name.replace(/^v/, "")}, ${megabytes} MB. Free and open source. Requires a Mac with Apple silicon.`;
     })

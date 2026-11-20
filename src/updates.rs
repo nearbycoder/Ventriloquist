@@ -1,10 +1,7 @@
 //! Updates, through Sparkle.
 //!
-//! A bundle built for release (`scripts/bundle --updates`) carries Sparkle.framework and, in
-//! its Info.plist, the feed to read and the key each update is signed with. Sparkle does the
-//! rest: it checks the feed once a day, shows what's new, verifies the download, swaps the
-//! bundle and relaunches. A bundle without the framework, such as a development build, has no
-//! updater and no menu item.
+//! Installed and release bundles carry Sparkle.framework, the feed URL and its public key.
+//! Sparkle checks daily, verifies the download and can install it when the app quits.
 
 use std::ffi::{CString, c_char, c_int, c_void};
 use std::os::unix::ffi::OsStrExt;
@@ -60,5 +57,38 @@ pub fn check() {
     if !controller.is_null() {
         // SAFETY: the controller is alive (never released) and `checkForUpdates:` takes any sender.
         let _: () = unsafe { msg_send![controller, checkForUpdates: null::<AnyObject>()] };
+    }
+}
+
+/// Sparkle owns these settings and persists changes made in either its update alert or our
+/// settings window. Access its updater on the main thread, after the controller has started.
+#[derive(Clone, Copy)]
+pub struct UpdateSettings(&'static AnyObject);
+
+impl UpdateSettings {
+    pub fn current() -> Option<Self> {
+        let controller = CONTROLLER.load(Ordering::Acquire);
+        if controller.is_null() {
+            return None;
+        }
+        // SAFETY: our retained controller owns its SPUUpdater for the life of the process.
+        let updater: *const AnyObject = unsafe { msg_send![controller, updater] };
+        unsafe { updater.as_ref() }.map(Self)
+    }
+
+    pub fn checks(&self) -> bool {
+        unsafe { msg_send![self.0, automaticallyChecksForUpdates] }
+    }
+
+    pub fn set_checks(&self, enabled: bool) {
+        unsafe { msg_send![self.0, setAutomaticallyChecksForUpdates: enabled] }
+    }
+
+    pub fn installs(&self) -> bool {
+        unsafe { msg_send![self.0, automaticallyDownloadsUpdates] }
+    }
+
+    pub fn set_installs(&self, enabled: bool) {
+        unsafe { msg_send![self.0, setAutomaticallyDownloadsUpdates: enabled] }
     }
 }

@@ -3,6 +3,17 @@
 Each release's notes. `scripts/release` publishes the part under the version it is releasing,
 on GitHub and in the app's update window.
 
+## 0.2.0
+
+- Reverb-TTS adds 16 preset voices and voice cloning in seven languages. Whisper Small
+  transcribes your voice sample locally. You can edit its words and speak a line in a different language.
+- Three new models: Inflect Mini, Micro and Atom, small English voices that run on the CPU
+  many times faster than real time. Mini plays vocal events written into the line, such as
+  `[laugh]` or `[yawn]`, and can run a take through its 48 kHz enhancer: write 48 kHz in
+  Direction.
+- Ventriloquist can now download signed updates in the background and install them when
+  you quit. This is on by default. Choose **Ventriloquist › Update Settings…** to change it.
+
 ## 0.1.1
 
 - ZONOS3 Mini downloads and loads again. Its publisher renamed one of the model's files,

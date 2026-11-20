@@ -74,10 +74,14 @@ pub struct Take {
     pub text: String,
     #[serde(default)]
     pub voice: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
     #[serde(default)]
     pub reference: Option<PathBuf>,
     #[serde(default)]
     pub ref_text: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_language: Option<String>,
     #[serde(default)]
     pub instruct: String,
     #[serde(default)]
@@ -150,6 +154,12 @@ pub enum Slot {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LanguageField {
+    Text,
+    Sample,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PlayKey {
     Take(u64),
     Slot(Slot),
@@ -161,6 +171,7 @@ pub enum PlayKey {
 const PREVIEW_IDS: u64 = 1 << 40;
 /// And from here up, lines sent to the prompt enhancer.
 const ENHANCE_IDS: u64 = 1 << 41;
+const TRANSCRIPTION_IDS: u64 = 1 << 42;
 /// The catalog id of the language model behind the Enhance button.
 pub const ENHANCER: &str = "enhancer";
 
@@ -189,12 +200,21 @@ pub struct App {
     pub live: bool,
     pub sidebar: PaneState,
     pub page: Page,
+    pub update_settings_open: bool,
     pub selected: usize,
     /// The model whose Remove button was pressed once and is asking to be sure.
     pub confirm_remove: Option<usize>,
     pub install: Vec<Install>,
     pub text: TextEdit,
     pub ref_text: TextEdit,
+    /// An automatic transcript can be regenerated when the sample language changes.
+    ref_text_auto: bool,
+    transcribing: Option<(u64, String)>,
+    next_transcription: u64,
+    /// An empty text language follows the voice.
+    pub language: String,
+    pub ref_language: String,
+    pub language_menu: Option<LanguageField>,
     /// A voice described in words, or how to deliver the line, for models that take direction.
     pub instruct: TextEdit,
     /// The voice chosen for each model that has voices, by model id.
@@ -259,6 +279,12 @@ impl App {
             confirm_remove: None,
             text: TextEdit::new(DEFAULT_TEXT),
             ref_text: TextEdit::new(""),
+            ref_text_auto: false,
+            transcribing: None,
+            next_transcription: TRANSCRIPTION_IDS,
+            language: String::new(),
+            ref_language: "en".into(),
+            language_menu: None,
             instruct: TextEdit::new(""),
             voice_menu: false,
             voice_filter: TextEdit::new(""),
@@ -286,6 +312,7 @@ impl App {
             notice: None,
             show_log: false,
             icon: None,
+            update_settings_open: false,
             engine: Engine::new(),
             waker: None,
             logs: HashMap::new(),
@@ -300,6 +327,9 @@ impl App {
         }
         // Open on something that can run, or on the list of models when nothing is downloaded.
         app.settle_selection();
+        if live {
+            app.transcribe_reference();
+        }
         app
     }
 
@@ -338,15 +368,21 @@ impl App {
     pub fn show_models(&mut self) {
         self.page = Page::Models;
         self.voice_menu = false;
+        self.language_menu = None;
     }
 
     pub fn select(&mut self, index: usize) {
         if index < self.catalog.models.len() {
+            if self.selected != index {
+                self.transcribing = None;
+            }
             self.page = Page::Bench;
             self.confirm_remove = None;
             self.selected = index;
             self.voice_menu = false;
+            self.language_menu = None;
             self.show_log = false;
+            self.transcribe_reference();
         }
     }
 
@@ -511,6 +547,9 @@ impl App {
 
     fn restore(&mut self, value: &Value) {
         let field = |key: &str| value.get(key).and_then(Value::as_str);
+        self.language = field("language").unwrap_or_default().into();
+        self.ref_language = field("ref_language").unwrap_or("en").into();
+        self.ref_text_auto = value.get("ref_text_auto").and_then(Value::as_bool).unwrap_or(false);
         if let Some(preprompt) = field("preprompt") {
             self.preprompt = TextEdit::new(preprompt);
         }
@@ -563,6 +602,9 @@ impl App {
             "text": self.text.text,
             "instruct": self.instruct.text,
             "ref_text": self.ref_text.text,
+            "ref_text_auto": self.ref_text_auto,
+            "language": self.language,
+            "ref_language": self.ref_language,
             "scene": self.scene.text,
             "scene_length": self.scene_length,
             "reference": clip(&self.reference),
@@ -651,9 +693,11 @@ impl App {
         }
     }
 
-    /// Forgets a preview or an enhancement whose engine was just stopped: its answer will
-    /// never come.
-    fn drop_preview_in(&mut self, env: &str) {
+    /// Forget pending requests when their worker stops.
+    fn forget_worker_requests(&mut self, env: &str) {
+        if self.model().env == env {
+            self.transcribing = None;
+        }
         if self.previewing.is_some_and(|p| self.catalog.models[p.model].env == env) {
             self.previewing = None;
         }
@@ -742,15 +786,21 @@ impl App {
         let id = self.next_id;
         self.next_id += 1;
         let uses_voice = m.cloning != Cloning::None && self.reference.is_some();
+        // A sample takes precedence over a preset. Keep the effective languages on the take
+        // so the same audio can later serve as a reference in its spoken language.
+        let voice = if uses_voice || m.kind == Kind::Vc { None } else { self.voice_index(&m).map(|i| &m.voices[i]) };
+        let ref_language = if uses_voice { m.language(&self.ref_language).or_else(|| m.language("en")) } else { None };
+        let language = m.language(&self.language).or(ref_language).or_else(|| voice.and_then(|v| m.language(&v.lang)));
         let take = Take {
             id,
             model: m.id.clone(),
             kind: m.kind,
             text: if m.kind == Kind::Tts { self.text.text.trim().to_owned() } else { String::new() },
-            // A voice sample, when there is one, wins over the model's own voices.
-            voice: if uses_voice || m.kind == Kind::Vc { None } else { self.voice(&m).map(str::to_owned) },
+            voice: voice.map(|v| v.id.clone()),
+            language: language.map(|l| l.code.clone()),
             reference: if uses_voice || m.kind == Kind::Vc { self.reference.as_ref().map(|c| c.path.clone()) } else { None },
             ref_text: if uses_voice && m.ref_text { self.ref_text.text.trim().to_owned() } else { String::new() },
+            ref_language: ref_language.map(|l| l.code.clone()),
             instruct: if m.kind == Kind::Tts && m.instruct != Instruct::None { self.instruct.text.trim().to_owned() } else { String::new() },
             source: if m.kind == Kind::Tts { None } else { self.source.as_ref().map(|c| c.path.clone()) },
             reply: String::new(),
@@ -824,8 +874,10 @@ impl App {
                 "model": take.model,
                 "text": take.text,
                 "voice": take.voice,
+                "language": take.language,
                 "ref_audio": take.reference,
                 "ref_text": take.ref_text,
+                "ref_language": take.ref_language,
                 "instruct": take.instruct,
                 "source_audio": take.source,
                 "out": take.out,
@@ -859,13 +911,14 @@ impl App {
             let env = env.and_then(|model| self.catalog.models.iter().find(|m| m.id == model).map(|m| m.env.clone()));
             if let Some(env) = env {
                 self.engine.stop(&env);
-                self.drop_preview_in(&env);
+                self.forget_worker_requests(&env);
             }
         }
         self.takes.retain(|t| t.status != TakeStatus::Cancelled);
     }
 
     pub fn stop_engines(&mut self) {
+        self.transcribing = None;
         self.previewing = None;
         self.enhancing = None;
         self.cancel();
@@ -882,6 +935,9 @@ impl App {
         let Some(id) = value.get("id").and_then(Value::as_u64) else { return };
         let event = value.get("event").and_then(Value::as_str).unwrap_or("");
         let text = |key: &str| value.get(key).and_then(Value::as_str).unwrap_or("").to_owned();
+        if id >= TRANSCRIPTION_IDS {
+            return self.on_transcription(id, event, value);
+        }
         if id >= ENHANCE_IDS {
             return self.on_enhance(id, event, value);
         }
@@ -907,6 +963,9 @@ impl App {
                     t.peak_gb = num("peak_gb");
                     t.reply = text("text");
                     t.tool = text("tool");
+                    if let Some(words) = value.get("ref_text").and_then(Value::as_str) {
+                        t.ref_text = words.into();
+                    }
                     if let Some(shape) = wav::shape(&t.out, PEAKS) {
                         t.peaks = shape.peaks;
                         if t.audio_seconds <= 0.0 {
@@ -939,7 +998,10 @@ impl App {
 
     fn on_worker_exit(&mut self, env: &str) {
         // Whatever was running in that environment died with it.
-        self.drop_preview_in(env);
+        if self.transcribing.is_some() && self.model().env == env {
+            self.notice = Some("Transcription stopped before it finished. Press Transcribe to retry, or enter the words in the sample.".into());
+        }
+        self.forget_worker_requests(env);
         let Some(id) = self.active else { return };
         let model = self.takes.iter().find(|t| t.id == id).map(|t| t.model.clone());
         let same_env = model.and_then(|m| self.catalog.models.iter().find(|x| x.id == m)).is_some_and(|m| m.env == env);
@@ -1002,7 +1064,7 @@ impl App {
             self.cancel();
         }
         self.engine.stop(&model.env);
-        self.drop_preview_in(&model.env);
+        self.forget_worker_requests(&model.env);
         if !self.live {
             self.install[index] = Install::Missing;
             self.settle_selection();
@@ -1078,6 +1140,9 @@ impl App {
                     }
                     self.refresh_installed();
                     self.settle_selection();
+                    if ok && self.model().id == model {
+                        self.transcribe_reference();
+                    }
                 }
             }
         }
@@ -1143,12 +1208,88 @@ impl App {
 
     // ----- Clips -----
 
+    pub fn transcription_status(&self) -> Option<&str> {
+        self.transcribing.as_ref().map(|(_, message)| message.as_str())
+    }
+
+    pub fn transcribe_reference(&mut self) {
+        let m = self.model();
+        let Some(transcriber) = &m.transcriber else { return };
+        let Some(clip) = &self.reference else { return };
+        if self.page != Page::Bench || !self.install[self.selected].is_ready() || self.transcribing.is_some() || !self.ref_text.text.trim().is_empty() {
+            return;
+        }
+        let id = self.next_transcription;
+        let request = json!({"op": "transcribe", "id": id, "model": m.id, "ref_audio": clip.path, "ref_language": self.ref_language});
+        let message = format!("Transcribing with {}…", transcriber.name);
+        let env = m.env.clone();
+        self.next_transcription += 1;
+        if self.live && let Err(e) = self.engine.send(&env, &request) {
+            self.notice = Some(e);
+            return;
+        }
+        self.transcribing = Some((id, message));
+    }
+
+    pub fn transcript_edited(&mut self) {
+        self.transcribing = None;
+        self.ref_text_auto = false;
+    }
+
+    pub fn set_sample_language(&mut self, language: String) {
+        if language == self.ref_language {
+            return;
+        }
+        self.ref_language = language;
+        self.transcribing = None;
+        if self.ref_text_auto {
+            self.ref_text.replace_text("");
+            self.ref_text_auto = false;
+        }
+        self.transcribe_reference();
+    }
+
+    fn on_transcription(&mut self, id: u64, event: &str, value: &Value) {
+        let Some((pending, status)) = &mut self.transcribing else { return };
+        if *pending != id {
+            return;
+        }
+        let message = value.get("message").and_then(Value::as_str).unwrap_or_default();
+        match event {
+            "status" => *status = message.to_owned(),
+            "done" => {
+                self.transcribing = None;
+                if self.ref_text.text.trim().is_empty() && let Some(words) = value.get("text").and_then(Value::as_str) {
+                    self.ref_text.replace_text(words);
+                    self.ref_text_auto = true;
+                }
+            }
+            "error" => {
+                self.transcribing = None;
+                self.notice = Some(format!("Couldn't transcribe the voice sample. {message}"));
+            }
+            _ => {}
+        }
+    }
+
+    fn replace_clip(&mut self, slot: Slot, clip: Option<Clip>, known_words: Option<&str>) {
+        if slot == Slot::Source {
+            self.source = clip;
+            return;
+        }
+        // A new recording or a file dropped again can reuse the previous file's path.
+        self.transcript_edited();
+        self.ref_text.replace_text(known_words.unwrap_or_default());
+        self.reference = clip;
+        self.transcribe_reference();
+    }
+
     /// Uses a file as a slot's clip. Anything that isn't a plain WAV is converted to one, which
     /// every model reads and the waveform can be drawn from.
     pub fn set_clip(&mut self, slot: Slot, path: &Path) {
         let name = paths::display_name(path);
         if wav::shape(path, 1).is_some() {
-            *self.clip_mut(slot) = Some(Clip::open(path.to_path_buf(), Some(name)));
+            self.replace_clip(slot, Some(Clip::open(path.to_path_buf(), Some(name))), None);
             return;
         }
         let stem = path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| "clip".into());
@@ -1159,7 +1300,7 @@ impl App {
             .arg(&out)
             .output();
         match converted {
-            Ok(o) if o.status.success() => *self.clip_mut(slot) = Some(Clip::open(out, Some(name))),
+            Ok(o) if o.status.success() => self.replace_clip(slot, Some(Clip::open(out, Some(name))), None),
             Ok(o) => self.notice = Some(format!("Couldn't read {name}: {}", String::from_utf8_lossy(&o.stderr).trim())),
             Err(e) => self.notice = Some(format!("Couldn't read {name}: {e}")),
         }
@@ -1169,18 +1310,18 @@ impl App {
         if self.playing.as_ref().is_some_and(|p| p.key == PlayKey::Slot(slot)) {
             self.playing = None;
         }
-        *self.clip_mut(slot) = None;
+        self.replace_clip(slot, None, None);
     }
 
     /// Uses a finished take as a clip: say it with one model, convert it with another.
     pub fn take_to_slot(&mut self, id: u64, slot: Slot) {
         let Some(t) = self.takes.iter().find(|t| t.id == id) else { return };
         let name = format!("{} take", self.catalog.models.iter().find(|m| m.id == t.model).map_or(t.model.as_str(), |m| m.name.as_str()));
-        let (path, text) = (t.out.clone(), t.text.clone());
-        *self.clip_mut(slot) = Some(Clip::open(path, Some(name)));
-        if slot == Slot::Reference && !text.is_empty() {
-            self.ref_text.replace_text(&text);
+        let (path, text, language) = (t.out.clone(), t.text.clone(), t.language.clone());
+        if slot == Slot::Reference && let Some(language) = language {
+            self.ref_language = language;
         }
+        self.replace_clip(slot, Some(Clip::open(path, Some(name))), (!text.is_empty()).then_some(text.as_str()));
     }
 
     /// Starts recording into a slot, or stops and keeps what was recorded.
@@ -1188,7 +1329,8 @@ impl App {
         if let Some((current, rec)) = self.recording.take() {
             match rec.stop() {
                 Ok(recording) if recording.duration >= 0.3 => {
-                    *self.clip_mut(current) = Some(Clip::open(recording.path, Some(format!("Recording, {}", clock(recording.duration)))));
+                    let clip = Clip::open(recording.path, Some(format!("Recording, {}", clock(recording.duration))));
+                    self.replace_clip(current, Some(clip), None);
                 }
                 Ok(recording) => {
                     std::fs::remove_file(recording.path).ok();
@@ -1387,6 +1529,41 @@ mod tests {
     }
 
     #[test]
+    fn reference_transcription_ignores_old_requests_and_preserves_manual_words() {
+        let mut app = ready();
+        app.select(app.catalog.index("reverb").unwrap());
+        let clip = |name: &str| Some(Clip { path: name.into(), name: name.into(), seconds: Some(4.0), peaks: vec![] });
+        app.replace_clip(Slot::Reference, clip("first.wav"), None);
+        let first = app.transcribing.as_ref().unwrap().0;
+        app.replace_clip(Slot::Reference, clip("second.wav"), None);
+        let second = app.transcribing.as_ref().unwrap().0;
+        app.on_worker(&json!({"id": first, "event": "done", "text": "Old sample"}));
+        assert!(app.ref_text.text.is_empty());
+        app.on_worker(&json!({"id": second, "event": "done", "text": "Second sample"}));
+        assert_eq!(app.ref_text.text, "Second sample");
+
+        app.set_sample_language("fr".into());
+        let french = app.transcribing.as_ref().unwrap().0;
+        assert!(app.ref_text.text.is_empty());
+        app.ref_text.replace_text("Bonjour.");
+        app.transcript_edited();
+        app.on_worker(&json!({"id": french, "event": "done", "text": "Uncorrected words"}));
+        app.set_sample_language("en".into());
+        assert_eq!(app.ref_text.text, "Bonjour.");
+        assert!(app.transcribing.is_none());
+
+        app.replace_clip(Slot::Reference, clip("third.wav"), None);
+        let third = app.transcribing.as_ref().unwrap().0;
+        app.on_worker(&json!({"id": third, "event": "error", "message": "No speech found"}));
+        assert!(app.transcribing.is_none() && app.ref_text.text.is_empty());
+        app.transcribe_reference();
+        let retry = app.transcribing.as_ref().unwrap().0;
+        app.clear_clip(Slot::Reference);
+        app.on_worker(&json!({"id": retry, "event": "done", "text": "Removed sample"}));
+        assert!(app.transcribing.is_none() && app.ref_text.text.is_empty());
+    }
+
+    #[test]
     fn takes_run_one_at_a_time_in_order() {
         let mut app = ready();
         let tts = app.catalog.models.iter().position(|m| m.kind == Kind::Tts && m.cloning != Cloning::Required).unwrap();
@@ -1467,6 +1644,32 @@ mod tests {
         // Leave the app's history as it was.
         app.delete_take(take.id);
         assert!(!take.out.exists());
+    }
+
+    #[test]
+    #[ignore = "needs Reverb-TTS and Whisper Small installed"]
+    fn a_live_reverb_sample_fills_the_transcript_before_a_take() {
+        let mut app = App::new(true);
+        let reverb = app.catalog.index("reverb").unwrap();
+        assert!(app.install[reverb].is_ready());
+        app.clear_clip(Slot::Reference);
+        app.select(reverb);
+        app.set_sample_language("en".into());
+        let path = std::env::temp_dir().join(format!("ventriloquist-transcribe-{}.wav", std::process::id()));
+        let spoken = "The blue train arrives at the station every morning.";
+        let recording = std::process::Command::new("/usr/bin/say")
+            .args(["-v", "Samantha", "-o"]).arg(&path).args(["--data-format=LEI16@16000", spoken]).status().unwrap();
+        assert!(recording.success());
+        app.set_clip(Slot::Reference, &path);
+        let start = std::time::Instant::now();
+        while app.transcribing.is_some() && start.elapsed() < Duration::from_secs(60) {
+            app.drain();
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        app.stop_engines();
+        std::fs::remove_file(path).unwrap();
+        assert!(app.ref_text_auto, "the sample should fill its transcript: {:?}", app.notice);
+        assert!(app.ref_text.text.to_lowercase().contains("blue train arrives at the station"), "{}", app.ref_text.text);
     }
 
     /// Removes a small model and downloads it again through the real installer:
@@ -1619,8 +1822,10 @@ mod tests {
             kind: m.kind,
             text: app.text.text.clone(),
             voice: m.voice_default.clone(),
+            language: None,
             reference: None,
             ref_text: String::new(),
+            ref_language: None,
             instruct: String::new(),
             source: None,
             reply: String::new(),

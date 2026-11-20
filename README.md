@@ -19,9 +19,9 @@ it and drag the app to Applications. It needs an Apple silicon Mac, and
 [`uv`](https://docs.astral.sh/uv/) (`brew install uv`) to install models. Nothing else: no
 ffmpeg, no system Python packages.
 
-A released copy keeps itself up to date: it checks for a new version once a day, shows the
-release notes and installs it when you agree. **Ventriloquist › Check for Updates** asks at
-once.
+Ventriloquist checks for updates daily, downloads signed releases in the background and
+installs them when you quit. Choose **Ventriloquist › Check for Updates…** to update right
+away. **Ventriloquist › Update Settings…** lets you change automatic checks and installation.
 
 ## Build
 
@@ -30,8 +30,9 @@ scripts/bundle --install --open     # builds Ventriloquist.app and puts it in /A
 cargo run --release                 # or run it straight from the checkout
 ```
 
-Building needs Rust (`rustup`) and, for the app icon, Xcode. A build made this way has no
-updater; it is replaced by building again.
+Building needs Rust (`rustup`) and, for the app icon, Xcode. An installed build includes
+the updater. Use `scripts/bundle --install --no-updates` to keep a local development build
+until you rebuild it yourself.
 
 ## The first run
 
@@ -58,13 +59,17 @@ real path on Apple Silicon (MLX, or PyTorch on Metal). Each was installed and ru
 its output transcribed back to check the words. Times are for the same eight-second line once
 the model is loaded. Released is when the weights were first published.
 
-**Text to speech** (through [mlx-audio](https://github.com/Blaizzy/mlx-audio), except Kitten, which has its own package, and ZONOS3, which runs on Zyphra's MLX runtime)
+**Text to speech** (most models use [mlx-audio](https://github.com/Blaizzy/mlx-audio). Kitten and Reverb use their own packages, ZONOS3 runs on Zyphra's MLX runtime, and Inflect runs on the CPU.)
 
 | Model | Released | Licence | Size | What it does | 8 s of speech in |
 |---|---|---|---|---|---|
 | Kokoro 82M | Dec 2024 | Apache-2.0 | 0.7 GB | 54 voices in 9 languages, no cloning | 0.17 s |
 | Phonon 31M | Oct 2026 | Apache-2.0 | 0.1 GB | 37 English voices, built for latency | 0.22 s |
 | ZONOS3 Mini | Nov 2026 | Apache-2.0 | 2.9 GB | 27 voices in 10 languages (43 spoken), cloning, steering by named controls, 44.1 kHz | 0.7 s |
+| Inflect Mini 34M | Nov 2026 | Apache-2.0 | 0.25 GB | 6 English voices, vocal events such as `[laugh]`, optional 48 kHz enhancer, on the CPU | 0.7 s |
+| Inflect Micro 12M | Nov 2026 | Apache-2.0 | 0.06 GB | the same 6 voices at a third of the size, speech only | 0.15 s |
+| Inflect Atom 157K | Nov 2026 | Apache-2.0 | 0.02 GB | the same 6 voices from a signal-processing voice, no neural vocoder | 0.07 s |
+| Reverb-TTS 297M | Nov 2026 | CC BY-NC 4.0 | 2.1 GB | 16 presets, cross-language voice cloning in 7 languages, local sample transcription, 24 kHz | 0.29 s |
 | Kitten TTS 2 1.7B | Sep 2026 | Stellon Labs Community (revenue cap) | 2.0 GB | 115 voices in 16 languages, cloning, emotion tags | 1.5 s |
 | Ming 3.0 TTS 0.5B | Sep 2026 | MIT | 3.0 GB | 243 voices, cloning, described voices, 44.1 kHz | 1.6 s |
 | Fish Drama 3 | Oct 2026 | Fish Audio Community (revenue cap) | 23.8 GB | acts the line, cloning, inline cues (4-bit build) | 2.7 s |
@@ -120,6 +125,24 @@ ships with, by name and optional amount: `happy`, `whisper 1`, `slower 2`, `brit
 embedding by the model's own encoder. Its text normaliser needs a library with no macOS
 build, so numbers and dates are read as written.
 
+The three Inflect models each ship as a package: weights together with the code that runs
+them, which checks every file against a manifest before loading any. Those checks refuse
+symbolic links, so the packages are downloaded into the app's data folder as real files
+(a download entry with a `dir`) and not into the Hugging Face cache, each at a fixed
+revision and in an environment of its own. They run on the CPU, the only device they support
+besides CUDA, with a new seed for every take. Inflect Mini is driven through its event
+component, which speaks plain text exactly as its speech command does; its 48 kHz enhancer
+applies to plain speech only. Tuning a voice to a recording is left out, because its maker
+supports that on Linux alone.
+
+[Reverb-TTS](https://huggingface.co/software-mansion/Reverb-TTS) runs on Metal through Software
+Mansion's Python package. Choose a preset or record or drop 3–10 seconds of clean speech.
+Whisper Small fills in the words spoken in the sample on this Mac. Set **Sample language**
+to the language of the recording and edit any words it missed. **Text language** defaults
+to the voice's language and can be changed for a cross-language take. New Reverb installs
+include Whisper Small. Earlier installs fetch it on the first automatic transcription
+(about 970 MB). After that, transcription and synthesis both work offline.
+
 LFM2.5 Audio is the one that calls tools. Ask it the time, a sum, for a die or a coin, or
 how much battery is left, and the take shows the call beside the answer. The published model
 has a place for tools in its prompt but was not trained to call them from speech: shown a
@@ -135,8 +158,8 @@ The tools are in `sidecar/tools.py`; they run locally and change nothing.
 
 ![A take with the tool it called](assets/tools.png)
 
-Four of these carry licences to read before using them for work, and the app marks them:
-Breeze TTS 2 is research and non-commercial only, and Fish Drama 3, Kitten TTS 2, LFM3 and
+The app marks models with limits on commercial use. Reverb-TTS has non-commercial weights
+that require attribution, Breeze TTS 2 is research and non-commercial only, and Fish Drama 3, Kitten TTS 2, LFM3 and
 LFM2.5 allow commercial use only below a revenue threshold. Left out: Higgs Audio v3, Voxtral TTS and
 F5-TTS (also non-commercial), Sesame CSM, Orpheus and NeuTTS (gated), PersonaPlex and
 Unmute (CUDA only), RVC (needs a model trained per voice), and Moshi (superseded, and its
@@ -213,11 +236,11 @@ The sidecar files are compiled into the binary and written to
 Environments, recordings, takes and history live beside them; weights go to the shared
 Hugging Face cache (`~/.cache/huggingface`), except Seed-VC's, which sit in its environment.
 
-There are six environments, because the libraries don't agree on versions: `mlx`
+The libraries use separate environments because they need different versions. These include `mlx`
 (Python 3.12, mlx-audio 0.6.5), `kitten` (3.12, KittenML's own package on its MLX backend),
 `zonos` (3.12, Zyphra's repository at a fixed commit, installed from its lockfile),
 `chatterbox` (3.11, torch 2.6), `seedvc` (3.10, torch 2.6 with Seed-VC checked out at a
-fixed commit) and `coqui` (3.12, torch 2.8).
+fixed commit), `coqui` (3.12, torch 2.8), `reverb` (3.12, reverb-tts 1.0.0), and one for each Inflect model.
 
 To add a model that mlx-audio supports, add an entry to `sidecar/catalog.json`; the
 `mlx_tts` and `mlx_sts` adapters in `worker.py` call anything with the standard `generate`.
@@ -225,6 +248,7 @@ Then try it without the window:
 
 ```sh
 scripts/try-model ming "Good evening." --voice UK_Charlotte --twice
+scripts/try-model reverb "Bonjour tout le monde." --language fr --ref sample.wav --ref-language en
 scripts/try-model seed-vc --source speech.wav --ref voice.wav
 scripts/try-model lfm25-audio --source question.wav
 scripts/try-model zonos3 "Stay with us." --instruct "Late-night radio"
